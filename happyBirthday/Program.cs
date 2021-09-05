@@ -5,52 +5,46 @@ namespace happyBirthday
 {
     public class Program
     {
-        public static string Path { get; set; } = "db.csv";
+        public static string DayNow { get; } = DateTime.Now.Day.ToString().Length == 2
+            ? DateTime.Now.Day.ToString()
+            : "0" + DateTime.Now.Day.ToString();
+
+        public static string MonthNow { get; } = DateTime.Now.Month.ToString().Length == 2
+            ? DateTime.Now.Month.ToString()
+            : "0" + DateTime.Now.Month.ToString();
+
+        public static int YearNow { get; set; } = DateTime.Now.Year;
+
         public static string[] Lines { get; set; }
+
         public static List<Dictionary<string, string>> People { get; set; } = new();
-        public static string DayNow { get; set; }
-        public static string MonthNow { get; set; }
-        public static int YearNow { get; set; }
+
+        public static string Text { get; set; }
 
         private static void Main(string[] args)
         {
-            GetDateNow();
             try
             {
-                ReadFile(Path);
-                GetPeopleList();
-                Console.WriteLine(GetText());
+                Lines = ReadFile("db.csv");
+                People = GetPeopleList(Lines);
+                Text = GetText(People);
+                ShowText(Text);
             }
             catch (System.IO.FileNotFoundException ex)
             {
-                Console.WriteLine(ex.Message);
+                ShowText(ex.Message);
             }
             catch (FormatException ex)
             {
-                Console.WriteLine(ex.Message);
+                ShowText(ex.Message);
             }
         }
 
-        public static void GetDateNow()
-        {
-            DayNow = DateTime.Now.Day.ToString();
-            if (DayNow.Length < 2)
-            {
-                DayNow = "0" + DayNow;
-            }
-            MonthNow = DateTime.Now.Month.ToString();
-            if (MonthNow.Length < 2)
-            {
-                MonthNow = "0" + MonthNow;
-            }
-            YearNow = DateTime.Now.Year;
-        }
-
-        public static void ReadFile(string path)
+        public static string[] ReadFile(string path)
         {
             try
             {
-                Lines = System.IO.File.ReadAllLines(path);
+                return System.IO.File.ReadAllLines(path);
             }
             catch (System.IO.FileNotFoundException ex)
             {
@@ -59,40 +53,41 @@ namespace happyBirthday
             }
         }
 
-        public static void GetPeopleList()
+        public static List<Dictionary<string, string>> GetPeopleList(string[] lines)
         {
-            if (Lines.Length == 0)
+            if (lines == null || lines.Length == 0)
             {
                 throw new FormatException("Ошибка: отсутсвуют данные");
             }
-            foreach (string line in Lines)
+            List<Dictionary<string, string>> people = new();
+            foreach (string line in lines)
             {
                 try
                 {
                     string[] values = line.Split(";");
                     if (values.Length != 6)
                     {
-                        throw new FormatException($"Неправильный формат таблицы: ошибка в строке  {Array.IndexOf(Lines, line) + 1}");
+                        throw new FormatException($"Неправильный формат таблицы: ошибка в строке  {Array.IndexOf(lines, line) + 1}");
                     }
                     string name = values[2];
                     if (name.Length <= 0)
                     {
-                        throw new FormatException($"Отсутствует имя в строке {Array.IndexOf(Lines, line) + 1}");
+                        throw new FormatException($"Отсутствует имя в строке {Array.IndexOf(lines, line) + 1}");
                     }
                     string day = values[4].Split(".")[0];
                     if (!int.TryParse(day, out int num) || day.Length != 2 || num > 31)
                     {
-                        throw new FormatException($"Неправильный формат дня в строке {Array.IndexOf(Lines, line) + 1}");
+                        throw new FormatException($"Неправильный формат дня в строке {Array.IndexOf(lines, line) + 1}");
                     }
                     string month = values[4].Split(".")[1];
                     if (!int.TryParse(month, out num) || month.Length != 2 || num > 12)
                     {
-                        throw new FormatException($"Неправильный формат месяца в строке {Array.IndexOf(Lines, line) + 1}");
+                        throw new FormatException($"Неправильный формат месяца в строке {Array.IndexOf(lines, line) + 1}");
                     }
                     string year = values[4].Split(".")[2];
                     if (!int.TryParse(year, out num) || year.Length != 4 || num > YearNow)
                     {
-                        throw new FormatException($"Неправильный формат года в строке {Array.IndexOf(Lines, line) + 1}");
+                        throw new FormatException($"Неправильный формат года в строке {Array.IndexOf(lines, line) + 1}");
                     }
                     if (month == MonthNow && day == DayNow)
                     {
@@ -101,7 +96,7 @@ namespace happyBirthday
                         man.Add("day", day);
                         man.Add("month", month);
                         man.Add("year", year);
-                        People.Add(man);
+                        people.Add(man);
                     }
                 }
                 catch(FormatException ex)
@@ -110,25 +105,25 @@ namespace happyBirthday
                     throw badFormat;
                 }
             }
+            return people;
         }
 
-        public static string GetText()
+        public static string GetText(List<Dictionary<string, string>> people)
         {
             string text;
-            if (People.Count > 1)
+            if (people.Count > 1)
             {
                 text = $"Сегодня {DayNow}.{MonthNow} отмечают день рождения:\n\n";
-                foreach (Dictionary<string, string> man in People)
+                foreach (Dictionary<string, string> man in people)
                 {
                     text += "\t" + man["name"] + " (" + GetAge(man["year"]) + ")\n";
                 }
             }
             else
             {
-                text = People.Count == 1
-                    ? $"Сегодня {DayNow}.{MonthNow} отмечает день рождения\n\n" + "\t" + People[0]["name"] + " (" + GetAge(People[0]["year"]) + ")\n"
+                text = people.Count == 1
+                    ? $"Сегодня {DayNow}.{MonthNow} отмечает день рождения\n\n" + "\t" + people[0]["name"] + " (" + GetAge(people[0]["year"]) + ")\n"
                     : $"Сегодня {DayNow}.{MonthNow} никто не отмечает день рождения";
-
             }
             return text;
         }
@@ -154,6 +149,11 @@ namespace happyBirthday
                 str += " лет";
             }
             return str;
+        }
+
+        public static void ShowText(string txt)
+        {
+            Console.WriteLine(txt);
         }
     }
 }
