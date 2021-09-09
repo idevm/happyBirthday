@@ -21,6 +21,7 @@ namespace happyBirthday
 
         public static string Text { get; set; }
 
+
         private static void Main(string[] args)
         {
             try
@@ -29,6 +30,7 @@ namespace happyBirthday
                 People = GetPeopleList(Lines);
                 Text = GetText(People);
                 ShowText(Text);
+                //WriteFile("db.csv", AddText(Lines));
             }
             catch (System.IO.FileNotFoundException ex)
             {
@@ -39,6 +41,19 @@ namespace happyBirthday
                 ShowText(ex.Message);
             }
         }
+
+
+        public static void ShowText(string txt)
+        {
+            Console.WriteLine(txt);
+        }
+
+
+        public static string GetTextFromUser()
+        {
+            return Console.ReadLine();
+        }
+
 
         public static string[] ReadFile(string path)
         {
@@ -52,6 +67,13 @@ namespace happyBirthday
                 throw noFile;
             }
         }
+
+
+        public static void WriteFile(string path, string txt)
+        {
+            System.IO.File.AppendAllText(path, txt);
+        }
+
 
         public static List<Dictionary<string, string>> GetPeopleList(string[] lines)
         {
@@ -108,6 +130,7 @@ namespace happyBirthday
             return people;
         }
 
+
         public static string GetText(List<Dictionary<string, string>> people)
         {
             string text;
@@ -127,6 +150,7 @@ namespace happyBirthday
             }
             return text;
         }
+
 
         public static string GetAge(string year)
         {
@@ -151,9 +175,115 @@ namespace happyBirthday
             return str;
         }
 
-        public static void ShowText(string txt)
+
+        public static string AddText(string[] lines, string name, string birthday)
         {
-            Console.WriteLine(txt);
+            if (lines == null)
+            {
+                lines = new string[0];
+            }
+            string num = "1";
+            if (lines.Length != 0)
+            {
+                num = (int.Parse(lines[lines.Length - 1].Split(";")[0]) + 1).ToString();
+            }
+            try
+            {
+                if (!ValidateInput(name:name))
+                {
+                    throw new FormatException("Введите корректные ФИО (например Иванов Иван Иванович)");
+                }
+                if (!ValidateInput(birthday:birthday))
+                {
+                    throw new FormatException("Введите корректную дату рождения (например 02.08.1999)");
+                }
+            }
+            catch (FormatException ex)
+            {
+                FormatException badInput = new("Введены некорректные данные\n"+ex.Message);
+                throw badInput;
+            }
+            string result = $"{num};;{name.ToUpper()};;{birthday};\n";
+            return result;
+        }
+
+
+        public static string AddText(string[] lines)
+        {
+            if (lines == null)
+            {
+                lines = new string[0];
+            }
+            string num = "1";
+            if (lines.Length != 0)
+            {
+                num = (int.Parse(lines[lines.Length - 1].Split(";")[0]) + 1).ToString();
+            }
+            ShowText("Введите ФИО");
+            string name = GetTextFromUser();
+            while (true)
+            {
+                if (!ValidateInput(name:name))
+                {
+                    ShowText("Введите корректные ФИО (например Иванов Иван Иванович):");
+                    name = GetTextFromUser().ToUpper();
+                }
+                else
+                {
+                    break;
+                }
+            }
+            ShowText("Введите дату рождения (в формате дд.мм.гггг):");
+            string birthday = GetTextFromUser();
+            while (true)
+            {
+                if (!ValidateInput(birthday:birthday))
+                {
+                    ShowText("Введите корректную дату рождения (например 02.08.1999):");
+                    birthday = GetTextFromUser();
+                }
+                else
+                {
+                    break;
+                }
+            }
+            string result = $"{num};;{name.ToUpper()};;{birthday};\n";
+            return result;
+        }
+
+
+        public static bool ValidateInput(string name="nameParam", string birthday = "birthdayParam")
+        {
+            if (name != "nameParam")
+            {
+                if (name.Length<=0)
+                {
+                    return false;
+                }
+            }
+            if (birthday != "birthdayParam")
+            {
+                if (birthday.Length <= 0 || birthday.Split(".").Length != 3)
+                {
+                    return false;
+                }
+                string day = birthday.Split(".")[0];
+                string month = birthday.Split(".")[1];
+                string year = birthday.Split(".")[2];
+                if (!int.TryParse(day, out int d)
+                || day.Length != 2
+                || d > 31
+                || !int.TryParse(month, out int m)
+                || month.Length != 2
+                || m > 12
+                || !int.TryParse(year, out int y)
+                || year.Length != 4
+                || y > YearNow)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }
