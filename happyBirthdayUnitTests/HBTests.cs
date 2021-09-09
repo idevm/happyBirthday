@@ -16,6 +16,7 @@ namespace happyBirthdayUnitTests
             ? DateTime.Now.Month.ToString()
             : "0" + DateTime.Now.Month.ToString();
 
+
         [TestCase("db")][TestCase("db.")][TestCase("d.csv")]
         [TestCase("db.xls")][TestCase("db.txt")][TestCase("../db.csv")]
         public void ReadFile_BadFiles_ThrowException(string path)
@@ -23,6 +24,7 @@ namespace happyBirthdayUnitTests
             Exception ex = Assert.Catch(() => Program.ReadFile(path));
             StringAssert.Contains("Не найден файл с данными, а именно: ", ex.Message);
         }
+
 
         [Test]
         public void GetPeopleList_OneMan_ReturnsPeopleList()
@@ -38,6 +40,7 @@ namespace happyBirthdayUnitTests
             List<Dictionary<string, string>> res = Program.GetPeopleList(lines);
             Assert.AreEqual(exp, res);
         }
+
 
         [Test]
         public void GetPeopleList_MoreMen_ReturnsPeopleList()
@@ -58,6 +61,7 @@ namespace happyBirthdayUnitTests
             Assert.AreEqual(exp, res);
         }
 
+
         [Test]
         public void GetPeopleList_ValidDataButNoBirthdays_ReturnsEmpty()
         {
@@ -70,6 +74,7 @@ namespace happyBirthdayUnitTests
             Assert.AreEqual(exp, res);
         }
 
+
         [Test]
         public void GetPeopleList_NoData_ThrowsExceptiion()
         {
@@ -78,6 +83,7 @@ namespace happyBirthdayUnitTests
             StringAssert.Contains("Ошибка: отсутсвуют данные", ex.Message);
         }
 
+
         [Test]
         public void GetPeopleList_NullData_ThrowsExceptiion()
         {
@@ -85,6 +91,7 @@ namespace happyBirthdayUnitTests
             Exception ex = Assert.Catch(() => Program.GetPeopleList(lines));
             StringAssert.Contains("Ошибка: отсутсвуют данные", ex.Message);
         }
+
 
         [TestCase("1;;Ivan;;01.01.1990")][TestCase("1;;Ivan;;")]
         [TestCase("1;;Ivan;")][TestCase("1;;Ivan")][TestCase("1;;")]
@@ -96,6 +103,7 @@ namespace happyBirthdayUnitTests
             StringAssert.Contains("Неправильный формат таблицы", ex.Message);
         }
 
+
         [Test]
         public void GetPeopleList_NoName_ThrowsExceptiion()
         {
@@ -103,6 +111,7 @@ namespace happyBirthdayUnitTests
             Exception ex = Assert.Catch(() => Program.GetPeopleList(lines));
             StringAssert.Contains("Отсутствует имя в строке 1", ex.Message);
         }
+
 
         [TestCase("1;;Ivan;;.01.1990;")][TestCase("1;;Ivan;;001.01.1990;")]
         [TestCase("1;;Ivan;;f.01.1990;")][TestCase("1;;Ivan;;33.01.1990;")]
@@ -113,6 +122,7 @@ namespace happyBirthdayUnitTests
             StringAssert.Contains("Неправильный формат дня в строке 1", ex.Message);
         }
 
+
         [TestCase("1;;Ivan;;01..1990;")][TestCase("1;;Ivan;;01.010.1990;")]
         [TestCase("1;;Ivan;;01.h.1990;")][TestCase("1;;Ivan;;01.22.1990;")]
         public void GetPeopleList_BadMonth_ThrowsExceptiion(string line)
@@ -121,6 +131,7 @@ namespace happyBirthdayUnitTests
             Exception ex = Assert.Catch(() => Program.GetPeopleList(lines));
             StringAssert.Contains("Неправильный формат месяца в строке 1", ex.Message);
         }
+
 
         [TestCase("1;;Ivan;;01.01.199;")][TestCase("1;;Ivan;;01.01.19902;")]
         [TestCase("1;;Ivan;;01.01.d;")][TestCase("1;;Ivan;;01.01.;")]
@@ -131,6 +142,7 @@ namespace happyBirthdayUnitTests
             StringAssert.Contains("Неправильный формат года в строке 1", ex.Message);
         }
 
+
         [Test]
         public void GetText_NoPeople_ReturnsText()
         {
@@ -139,6 +151,7 @@ namespace happyBirthdayUnitTests
             string res = Program.GetText(people);
             Assert.AreEqual(exp, res);
         }
+
 
         [Test]
         public void GetText_OnePeople_ReturnsText()
@@ -156,6 +169,7 @@ namespace happyBirthdayUnitTests
             Program.YearNow = DateTime.Now.Year;
             Assert.AreEqual(exp, res);
         }
+
 
         [Test]
         public void GetText_MorePeople_ReturnsText()
@@ -180,6 +194,7 @@ namespace happyBirthdayUnitTests
             Assert.AreEqual(exp, res);
         }
 
+
         [TestCase("0", "0 лет")][TestCase("1", "1 год")][TestCase("2", "2 года")]
         [TestCase("3", "3 года")][TestCase("4", "4 года")][TestCase("5", "5 лет")]
         [TestCase("6", "6 лет")][TestCase("7", "7 лет")][TestCase("8", "8 лет")]
@@ -200,6 +215,55 @@ namespace happyBirthdayUnitTests
             string res = Program.GetAge(year);
             Program.YearNow = DateTime.Now.Year;
             Assert.AreEqual(exp, res);
+        }
+
+
+        [TestCase("Ivan", "01.01.1990", "1;;IVAN;;01.01.1990;\n")]
+        public void AddText_NoDataOneValidInput_ReturnsText(string name, string birthday, string exp)
+        {
+            string[] lines = new string[0];
+            string res = Program.AddText(lines, name, birthday);
+            Assert.AreEqual(exp, res);
+        }
+
+
+        [TestCase("Ivan", "01.01.1990", "1;;IVAN;;01.01.1990;\n")]
+        public void AddText_NullDataOneValidInput_ReturnsText(string name, string birthday, string exp)
+        {
+            string[] lines = null;
+            string res = Program.AddText(lines, name, birthday);
+            Assert.AreEqual(exp, res);
+        }
+
+
+        [TestCase("Ivan", "01.01.1990", "3;;IVAN;;01.01.1990;\n")]
+        public void AddText_SomeDataOneValidInput_ReturnsText(string name, string birthday, string exp)
+        {
+            string[] lines = new string[2] { "1;;Boris;;01.01.1990;\n", "2;;Vlad;;01.02.1980;\n" };
+            string res = Program.AddText(lines, name, birthday);
+            Assert.AreEqual(exp, res);
+        }
+
+
+        [TestCase("", "01.01.1990")]
+        public void AddText_BadNameInput_ThrowsException(string name, string birthday)
+        {
+            string[] lines = new string[0];
+            Exception ex = Assert.Catch(() => Program.AddText(lines, name, birthday));
+            StringAssert.Contains("Введены некорректные данные\nВведите корректные ФИО (например Иванов Иван Иванович)", ex.Message);
+        }
+
+
+        [TestCase("Ivan", "0.01.1990")][TestCase("Ivan", "01.1.1990")][TestCase("Ivan", "01.01.199")]
+        [TestCase("Ivan", "01.01")][TestCase("Ivan", "01.")][TestCase("Ivan", ".01.1990")]
+        [TestCase("Ivan", "01.f.1990")][TestCase("Ivan", "01..1990")][TestCase("Ivan", "01.01.")]
+        [TestCase("Ivan", "")][TestCase("Ivan", "01011990")][TestCase("Ivan", "01,01,1990")]
+        [TestCase("Ivan", "1.1.1990")][TestCase("Ivan", "f")][TestCase("Ivan","..")]
+        public void AddText_BadBirthdayInputs_ThrowsException(string name, string birthday)
+        {
+            string[] lines = new string[0];
+            Exception ex = Assert.Catch(() => Program.AddText(lines, name, birthday));
+            StringAssert.Contains("Введены некорректные данные\nВведите корректную дату рождения (например 02.08.1999)", ex.Message);
         }
     }
 }
