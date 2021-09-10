@@ -144,17 +144,17 @@ namespace happyBirthdayUnitTests
 
 
         [Test]
-        public void GetText_NoPeople_ReturnsText()
+        public void GetTextToday_NoPeople_ReturnsText()
         {
             List<Dictionary<string, string>> people = new();
             string exp = $"Сегодня {ThisDay}.{ThisMonth} никто не отмечает день рождения";
-            string res = Program.GetText(people);
+            string res = Program.GetTextToday(people);
             Assert.AreEqual(exp, res);
         }
 
 
         [Test]
-        public void GetText_OnePeople_ReturnsText()
+        public void GetTextToday_OnePeople_ReturnsText()
         {
             List<Dictionary<string, string>> people = new();
             Dictionary<string, string> man = new();
@@ -165,14 +165,14 @@ namespace happyBirthdayUnitTests
             people.Add(man);
             Program.YearNow = 2020;
             string exp = $"Сегодня {ThisDay}.{ThisMonth} отмечает день рождения\n\n" + "\t" + "Ivan" + " (" + "30 лет" + ")\n";
-            string res = Program.GetText(people);
+            string res = Program.GetTextToday(people);
             Program.YearNow = DateTime.Now.Year;
             Assert.AreEqual(exp, res);
         }
 
 
         [Test]
-        public void GetText_MorePeople_ReturnsText()
+        public void GetTextToday_MorePeople_ReturnsText()
         {
             List<Dictionary<string, string>> people = new();
             Dictionary<string, string> man1 = new();
@@ -189,7 +189,59 @@ namespace happyBirthdayUnitTests
             people.Add(man2);
             Program.YearNow = 2020;
             string exp = $"Сегодня {ThisDay}.{ThisMonth} отмечают день рождения:\n\n\tIvan (" + "30 лет" + ")\n\tIva (" + "29 лет" + ")\n";
-            string res = Program.GetText(people);
+            string res = Program.GetTextToday(people);
+            Program.YearNow = DateTime.Now.Year;
+            Assert.AreEqual(exp, res);
+        }
+
+
+        [Test]
+        public void GetTextThisMonth_NoPeople_ReturnsText()
+        {
+            List<Dictionary<string, string>> people = new();
+            string exp = "В этом месяце никто не отмечает день рождения";
+            string res = Program.GetTextThisMonth(people);
+            Assert.AreEqual(exp, res);
+        }
+
+
+        [Test]
+        public void GetTextThisMonth_OnePeople_ReturnsText()
+        {
+            List<Dictionary<string, string>> people = new();
+            Dictionary<string, string> man = new();
+            man.Add("name", "Ivan");
+            man.Add("day", "31");
+            man.Add("month", ThisMonth);
+            man.Add("year", "1990");
+            people.Add(man);
+            Program.YearNow = 2020;
+            string exp = $"В этом месяце отмечает день рождения\n\n\tIvan (31.{ThisMonth})\n";
+            string res = Program.GetTextThisMonth(people);
+            Program.YearNow = DateTime.Now.Year;
+            Assert.AreEqual(exp, res);
+        }
+
+
+        [Test]
+        public void GetTextThisMonth_MorePeople_ReturnsText()
+        {
+            List<Dictionary<string, string>> people = new();
+            Dictionary<string, string> man1 = new();
+            Dictionary<string, string> man2 = new();
+            man1.Add("name", "Ivan");
+            man1.Add("day", "31");
+            man1.Add("month", ThisMonth);
+            man1.Add("year", "1990");
+            people.Add(man1);
+            man2.Add("name", "Iva");
+            man2.Add("day", "13");
+            man2.Add("month", ThisMonth);
+            man2.Add("year", "1991");
+            people.Add(man2);
+            Program.YearNow = 2020;
+            string exp = $"В этом месяце отмечают день рождения:\n\n\tIvan (31.{ThisMonth})\n\tIva (13.{ThisMonth})\n";
+            string res = Program.GetTextThisMonth(people);
             Program.YearNow = DateTime.Now.Year;
             Assert.AreEqual(exp, res);
         }
@@ -264,6 +316,41 @@ namespace happyBirthdayUnitTests
             string[] lines = new string[0];
             Exception ex = Assert.Catch(() => Program.AddText(lines, name, birthday));
             StringAssert.Contains("Введены некорректные данные\nВведите корректную дату рождения (например 02.08.1999)", ex.Message);
+        }
+
+
+        [TestCase("Ivan", "01.01.1990")]
+        public void ValidInput_SomeValidValues_ReturnsTrue(string n, string bd)
+        {
+            bool res = Program.ValidInput(n, bd);
+            Assert.True(res);
+        }
+
+
+        [Test]
+        public void ValidInput_OnlyValidName_ReturnsTrue()
+        {
+            bool res = Program.ValidInput("Ivan");
+            Assert.True(res);
+        }
+
+
+        [Test]
+        public void ValidInput_OnlyValidBirthDay_ReturnsTrue()
+        {
+            bool res = Program.ValidInput("01.01.1990");
+            Assert.True(res);
+        }
+
+        [TestCase("Ivan", "0.01.1990")][TestCase("Ivan", "01.1.1990")][TestCase("Ivan", "01.01.199")]
+        [TestCase("Ivan", "01.01")][TestCase("Ivan", "01.")][TestCase("Ivan", ".01.1990")]
+        [TestCase("Ivan", "01.f.1990")][TestCase("Ivan", "01..1990")][TestCase("Ivan", "01.01.")]
+        [TestCase("Ivan", "")][TestCase("Ivan", "01011990")][TestCase("Ivan", "01,01,1990")]
+        [TestCase("Ivan", "1.1.1990")][TestCase("Ivan", "f")][TestCase("Ivan","..")][TestCase("","")]
+        public void ValidInput_SomeBadValues_ReturnsFalse(string n, string bd)
+        {
+            bool res = Program.ValidInput(n, bd);
+            Assert.False(res);
         }
     }
 }

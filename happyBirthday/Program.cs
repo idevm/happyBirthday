@@ -28,7 +28,10 @@ namespace happyBirthday
             {
                 Lines = ReadFile("db.csv");
                 People = GetPeopleList(Lines);
-                Text = GetText(People);
+                Text = GetTextToday(People);
+                ShowText(Text);
+                People = GetPeopleList(Lines, "thisMonth");
+                Text = GetTextThisMonth(People);
                 ShowText(Text);
                 //WriteFile("db.csv", AddText(Lines));
             }
@@ -75,7 +78,7 @@ namespace happyBirthday
         }
 
 
-        public static List<Dictionary<string, string>> GetPeopleList(string[] lines)
+        public static List<Dictionary<string, string>> GetPeopleList(string[] lines, string mode="today")
         {
             if (lines == null || lines.Length == 0)
             {
@@ -111,14 +114,29 @@ namespace happyBirthday
                     {
                         throw new FormatException($"Неправильный формат года в строке {Array.IndexOf(lines, line) + 1}");
                     }
-                    if (month == MonthNow && day == DayNow)
+                    if (mode == "today")
                     {
-                        Dictionary<string, string> man = new();
-                        man.Add("name", name);
-                        man.Add("day", day);
-                        man.Add("month", month);
-                        man.Add("year", year);
-                        people.Add(man);
+                        if (month == MonthNow && day == DayNow)
+                        {
+                            Dictionary<string, string> man = new();
+                            man.Add("name", name);
+                            man.Add("day", day);
+                            man.Add("month", month);
+                            man.Add("year", year);
+                            people.Add(man);
+                        }
+                    }
+                    else
+                    {
+                        if (month == MonthNow)
+                        {
+                            Dictionary<string, string> man = new();
+                            man.Add("name", name);
+                            man.Add("day", day);
+                            man.Add("month", month);
+                            man.Add("year", year);
+                            people.Add(man);
+                        }
                     }
                 }
                 catch(FormatException ex)
@@ -131,7 +149,7 @@ namespace happyBirthday
         }
 
 
-        public static string GetText(List<Dictionary<string, string>> people)
+        public static string GetTextToday(List<Dictionary<string, string>> people)
         {
             string text;
             if (people.Count > 1)
@@ -139,14 +157,35 @@ namespace happyBirthday
                 text = $"Сегодня {DayNow}.{MonthNow} отмечают день рождения:\n\n";
                 foreach (Dictionary<string, string> man in people)
                 {
-                    text += "\t" + man["name"] + " (" + GetAge(man["year"]) + ")\n";
+                    text += $"\t{man["name"]} ({ GetAge(man["year"])})\n";
                 }
             }
             else
             {
                 text = people.Count == 1
-                    ? $"Сегодня {DayNow}.{MonthNow} отмечает день рождения\n\n" + "\t" + people[0]["name"] + " (" + GetAge(people[0]["year"]) + ")\n"
+                    ? $"Сегодня {DayNow}.{MonthNow} отмечает день рождения\n\n\t{ people[0]["name"]} ({GetAge(people[0]["year"])})\n"
                     : $"Сегодня {DayNow}.{MonthNow} никто не отмечает день рождения";
+            }
+            return text;
+        }
+
+
+        public static string GetTextThisMonth(List<Dictionary<string, string>> people)
+        {
+            string text;
+            if (people.Count > 1)
+            {
+                text = $"В этом месяце отмечают день рождения:\n\n";
+                foreach (Dictionary<string, string> man in people)
+                {
+                    text += $"\t{man["name"]} ({man["day"]}.{man["month"]})\n";
+                }
+            }
+            else
+            {
+                text = people.Count == 1
+                    ? $"В этом месяце отмечает день рождения\n\n\t{people[0]["name"]} ({people[0]["day"]}.{people[0]["month"]})\n"
+                    : $"В этом месяце никто не отмечает день рождения";
             }
             return text;
         }
@@ -189,11 +228,11 @@ namespace happyBirthday
             }
             try
             {
-                if (!ValidateInput(name:name))
+                if (!ValidInput(name:name))
                 {
                     throw new FormatException("Введите корректные ФИО (например Иванов Иван Иванович)");
                 }
-                if (!ValidateInput(birthday:birthday))
+                if (!ValidInput(birthday:birthday))
                 {
                     throw new FormatException("Введите корректную дату рождения (например 02.08.1999)");
                 }
@@ -223,7 +262,7 @@ namespace happyBirthday
             string name = GetTextFromUser();
             while (true)
             {
-                if (!ValidateInput(name:name))
+                if (!ValidInput(name:name))
                 {
                     ShowText("Введите корректные ФИО (например Иванов Иван Иванович):");
                     name = GetTextFromUser().ToUpper();
@@ -237,7 +276,7 @@ namespace happyBirthday
             string birthday = GetTextFromUser();
             while (true)
             {
-                if (!ValidateInput(birthday:birthday))
+                if (!ValidInput(birthday:birthday))
                 {
                     ShowText("Введите корректную дату рождения (например 02.08.1999):");
                     birthday = GetTextFromUser();
@@ -252,7 +291,7 @@ namespace happyBirthday
         }
 
 
-        public static bool ValidateInput(string name="nameParam", string birthday = "birthdayParam")
+        public static bool ValidInput(string name="nameParam", string birthday = "birthdayParam")
         {
             if (name != "nameParam")
             {
