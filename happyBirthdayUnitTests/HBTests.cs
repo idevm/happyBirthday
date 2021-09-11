@@ -63,7 +63,7 @@ namespace happyBirthdayUnitTests
 
 
         [Test]
-        public void GetPeopleList_ValidDataButNoBirthdays_ReturnsEmpty()
+        public void GetPeopleList_ValidDataButNoBirthdays_ReturnsEmptyPeopleList()
         {
             string tomorrow = (int.Parse(ThisDay) + 1).ToString().Length == 2
             ? (int.Parse(ThisDay) + 1).ToString()
@@ -164,7 +164,7 @@ namespace happyBirthdayUnitTests
             man.Add("year", "1990");
             people.Add(man);
             Program.YearNow = 2020;
-            string exp = $"Сегодня {ThisDay}.{ThisMonth} отмечает день рождения\n\n" + "\t" + "Ivan" + " (" + "30 лет" + ")\n";
+            string exp = $"Сегодня {ThisDay}.{ThisMonth} отмечает день рождения\n\n\tIvan (30 лет)\n";
             string res = Program.GetTextToday(people);
             Program.YearNow = DateTime.Now.Year;
             Assert.AreEqual(exp, res);
@@ -188,7 +188,7 @@ namespace happyBirthdayUnitTests
             man2.Add("year", "1991");
             people.Add(man2);
             Program.YearNow = 2020;
-            string exp = $"Сегодня {ThisDay}.{ThisMonth} отмечают день рождения:\n\n\tIvan (" + "30 лет" + ")\n\tIva (" + "29 лет" + ")\n";
+            string exp = $"Сегодня {ThisDay}.{ThisMonth} отмечают день рождения:\n\n\tIvan (30 лет)\n\tIva (29 лет)\n";
             string res = Program.GetTextToday(people);
             Program.YearNow = DateTime.Now.Year;
             Assert.AreEqual(exp, res);
@@ -319,11 +319,19 @@ namespace happyBirthdayUnitTests
         }
 
 
-        [TestCase("Ivan", "01.01.1990")]
-        public void ValidInput_SomeValidValues_ReturnsTrue(string n, string bd)
+        [Test]
+        public void ValidInput_SomeValidInput_ReturnsTrue()
         {
-            bool res = Program.ValidInput(n, bd);
+            bool res = Program.ValidInput("Ivan", "01.01.1990");
             Assert.True(res);
+        }
+
+
+        [Test]
+        public void ValidInput_NoInput_ReturnsFalse()
+        {
+            bool res = Program.ValidInput();
+            Assert.False(res);
         }
 
 
@@ -342,11 +350,12 @@ namespace happyBirthdayUnitTests
             Assert.True(res);
         }
 
+
         [TestCase("Ivan", "0.01.1990")][TestCase("Ivan", "01.1.1990")][TestCase("Ivan", "01.01.199")]
         [TestCase("Ivan", "01.01")][TestCase("Ivan", "01.")][TestCase("Ivan", ".01.1990")]
         [TestCase("Ivan", "01.f.1990")][TestCase("Ivan", "01..1990")][TestCase("Ivan", "01.01.")]
         [TestCase("Ivan", "")][TestCase("Ivan", "01011990")][TestCase("Ivan", "01,01,1990")]
-        [TestCase("Ivan", "1.1.1990")][TestCase("Ivan", "f")][TestCase("Ivan","..")][TestCase("","")]
+        [TestCase("", "01.01.1990")][TestCase("Ivan", "f")][TestCase("Ivan","..")][TestCase("","")]
         public void ValidInput_SomeBadValues_ReturnsFalse(string n, string bd)
         {
             bool res = Program.ValidInput(n, bd);
