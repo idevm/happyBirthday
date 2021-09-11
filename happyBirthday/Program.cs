@@ -199,7 +199,8 @@ namespace happyBirthday
             {
                 str = "юбилей: " + str;
             }
-            if ((str.EndsWith('2') || str.EndsWith('3') || str.EndsWith('4')) && (!str.StartsWith('1') || str.Length == 3))
+            if ((str.EndsWith('2') || str.EndsWith('3') || str.EndsWith('4')) && (!str.StartsWith('1')
+                || str.Length == 3))
             {
                 str += " года";
             }
@@ -293,19 +294,14 @@ namespace happyBirthday
 
         public static bool ValidInput(string name="nameParam", string birthday = "birthdayParam")
         {
+            if (name == "nameParam" && birthday == "birthdayParam") return false;
             if (name != "nameParam")
             {
-                if (name.Length<=0)
-                {
-                    return false;
-                }
+                if (name.Length < 1) return false;
             }
             if (birthday != "birthdayParam")
             {
-                if (birthday.Length <= 0 || birthday.Split(".").Length != 3)
-                {
-                    return false;
-                }
+                if (birthday.Length < 1 || birthday.Split(".").Length != 3) return false;
                 string day = birthday.Split(".")[0];
                 string month = birthday.Split(".")[1];
                 string year = birthday.Split(".")[2];
