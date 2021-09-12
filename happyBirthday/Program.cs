@@ -5,60 +5,61 @@ namespace happyBirthday
 {
     public class Program
     {
-        public static string DayNow { get; } = DateTime.Now.Day.ToString().Length == 2
+        private string DayNow { get; } = DateTime.Now.Day.ToString().Length == 2
             ? DateTime.Now.Day.ToString()
             : "0" + DateTime.Now.Day.ToString();
 
-        public static string MonthNow { get; } = DateTime.Now.Month.ToString().Length == 2
+        private string MonthNow { get; } = DateTime.Now.Month.ToString().Length == 2
             ? DateTime.Now.Month.ToString()
             : "0" + DateTime.Now.Month.ToString();
 
-        public static int YearNow { get; set; } = DateTime.Now.Year;
+        public int YearNow { get; set; } = DateTime.Now.Year;
 
-        public static string[] Lines { get; set; }
+        private string[] Lines { get; set; }
 
-        public static List<Dictionary<string, string>> People { get; set; } = new();
+        private List<Dictionary<string, string>> People { get; set; } = new();
 
-        public static string Text { get; set; }
+        private string Text { get; set; }
 
 
         private static void Main(string[] args)
         {
+            Program P = new();
             try
             {
-                Lines = ReadFile("db.csv");
-                People = GetPeopleList(Lines);
-                Text = GetTextToday(People);
-                ShowText(Text);
-                People = GetPeopleList(Lines, "thisMonth");
-                Text = GetTextThisMonth(People);
-                ShowText(Text);
-                //WriteFile("db.csv", AddText(Lines));
+                P.Lines = P.ReadFile("db.csv");
+                P.People = P.GetPeopleList(P.Lines);
+                P.Text = P.GetTextToday(P.People);
+                P.ShowText(P.Text);
+                P.People = P.GetPeopleList(P.Lines, "thisMonth");
+                P.Text = P.GetTextThisMonth(P.People);
+                P.ShowText(P.Text);
+                P.WriteFile("db.csv", P.AddText(P.Lines));
             }
             catch (System.IO.FileNotFoundException ex)
             {
-                ShowText(ex.Message);
+                P.ShowText(ex.Message);
             }
             catch (FormatException ex)
             {
-                ShowText(ex.Message);
+                P.ShowText(ex.Message);
             }
         }
 
 
-        public static void ShowText(string txt)
+        public void ShowText(string txt)
         {
             Console.WriteLine(txt);
         }
 
 
-        public static string GetTextFromUser()
+        public string GetTextFromUser()
         {
             return Console.ReadLine();
         }
 
 
-        public static string[] ReadFile(string path)
+        public string[] ReadFile(string path)
         {
             try
             {
@@ -72,13 +73,13 @@ namespace happyBirthday
         }
 
 
-        public static void WriteFile(string path, string txt)
+        public void WriteFile(string path, string txt)
         {
             System.IO.File.AppendAllText(path, txt);
         }
 
 
-        public static List<Dictionary<string, string>> GetPeopleList(string[] lines, string mode="today")
+        public List<Dictionary<string, string>> GetPeopleList(string[] lines, string mode="today")
         {
             if (lines == null || lines.Length == 0)
             {
@@ -149,7 +150,7 @@ namespace happyBirthday
         }
 
 
-        public static string GetTextToday(List<Dictionary<string, string>> people)
+        public string GetTextToday(List<Dictionary<string, string>> people)
         {
             string text;
             if (people.Count > 1)
@@ -170,7 +171,7 @@ namespace happyBirthday
         }
 
 
-        public static string GetTextThisMonth(List<Dictionary<string, string>> people)
+        public string GetTextThisMonth(List<Dictionary<string, string>> people)
         {
             string text;
             if (people.Count > 1)
@@ -191,7 +192,7 @@ namespace happyBirthday
         }
 
 
-        public static string GetAge(string year)
+        public string GetAge(string year)
         {
             int age = YearNow - int.Parse(year);
             string str = age.ToString();
@@ -216,7 +217,7 @@ namespace happyBirthday
         }
 
 
-        public static string AddText(string[] lines, string name, string birthday)
+        public string AddText(string[] lines, string name, string birthday)
         {
             if (lines == null)
             {
@@ -248,7 +249,7 @@ namespace happyBirthday
         }
 
 
-        public static string AddText(string[] lines)
+        public string AddText(string[] lines)
         {
             if (lines == null)
             {
@@ -292,7 +293,7 @@ namespace happyBirthday
         }
 
 
-        public static bool ValidInput(string name="nameParam", string birthday = "birthdayParam")
+        public bool ValidInput(string name="nameParam", string birthday = "birthdayParam")
         {
             if (name == "nameParam" && birthday == "birthdayParam") return false;
             if (name != "nameParam")
