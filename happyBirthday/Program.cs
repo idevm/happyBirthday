@@ -22,44 +22,38 @@ namespace happyBirthday
         private string Text { get; set; }
 
 
-        private static void Main(string[] args)
+        private static void Main()
         {
-            Program P = new();
+            Program p = new();
             try
             {
-                P.Lines = P.ReadFile("db.csv");
-                P.People = P.GetPeopleList(P.Lines);
-                P.Text = P.GetTextToday(P.People);
-                P.ShowText(P.Text);
-                P.People = P.GetPeopleList(P.Lines, "thisMonth");
-                P.Text = P.GetTextThisMonth(P.People);
-                P.ShowText(P.Text);
-                P.WriteFile("db.csv", P.AddText(P.Lines));
+                p.Lines = ReadFile("db.csv");
+                p.People = p.GetPeopleList(p.Lines);
+                p.Text = p.GetTextToday(p.People);
+                ShowText(p.Text);
+                p.People = p.GetPeopleList(p.Lines, "thisMonth");
+                p.Text = p.GetTextThisMonth(p.People);
+                ShowText(p.Text);
+                WriteFile("db.csv", p.AddText(p.Lines));
             }
             catch (System.IO.FileNotFoundException ex)
             {
-                P.ShowText(ex.Message);
+                ShowText(ex.Message);
             }
             catch (FormatException ex)
             {
-                P.ShowText(ex.Message);
+                ShowText(ex.Message);
             }
         }
 
 
-        public void ShowText(string txt)
-        {
-            Console.WriteLine(txt);
-        }
+        public static void ShowText(string txt) => Console.WriteLine(txt);
 
 
-        public string GetTextFromUser()
-        {
-            return Console.ReadLine();
-        }
+        public static string GetTextFromUser() => Console.ReadLine();
 
 
-        public string[] ReadFile(string path)
+        public static string[] ReadFile(string path)
         {
             try
             {
@@ -73,13 +67,10 @@ namespace happyBirthday
         }
 
 
-        public void WriteFile(string path, string txt)
-        {
-            System.IO.File.AppendAllText(path, txt);
-        }
+        public static void WriteFile(string path, string txt) => System.IO.File.AppendAllText(path, txt);
 
 
-        public List<Dictionary<string, string>> GetPeopleList(string[] lines, string mode="today")
+        public List<Dictionary<string, string>> GetPeopleList(string[] lines, string mode = "today")
         {
             if (lines == null || lines.Length == 0)
             {
@@ -221,7 +212,7 @@ namespace happyBirthday
         {
             if (lines == null)
             {
-                lines = new string[0];
+                lines = Array.Empty<string>();
             }
             string num = "1";
             if (lines.Length != 0)
@@ -230,18 +221,18 @@ namespace happyBirthday
             }
             try
             {
-                if (!ValidInput(name:name))
+                if (!ValidInput(name: name))
                 {
                     throw new FormatException("Введите корректные ФИО (например Иванов Иван Иванович)");
                 }
-                if (!ValidInput(birthday:birthday))
+                if (!ValidInput(birthday: birthday))
                 {
                     throw new FormatException("Введите корректную дату рождения (например 02.08.1999)");
                 }
             }
             catch (FormatException ex)
             {
-                FormatException badInput = new("Введены некорректные данные\n"+ex.Message);
+                FormatException badInput = new("Введены некорректные данные\n" + ex.Message);
                 throw badInput;
             }
             string result = $"{num};;{name.ToUpper()};;{birthday};\n";
@@ -253,7 +244,7 @@ namespace happyBirthday
         {
             if (lines == null)
             {
-                lines = new string[0];
+                lines = Array.Empty<string>();
             }
             string num = "1";
             if (lines.Length != 0)
@@ -264,7 +255,7 @@ namespace happyBirthday
             string name = GetTextFromUser();
             while (true)
             {
-                if (!ValidInput(name:name))
+                if (!ValidInput(name: name))
                 {
                     ShowText("Введите корректные ФИО (например Иванов Иван Иванович):");
                     name = GetTextFromUser().ToUpper();
@@ -278,7 +269,7 @@ namespace happyBirthday
             string birthday = GetTextFromUser();
             while (true)
             {
-                if (!ValidInput(birthday:birthday))
+                if (!ValidInput(birthday: birthday))
                 {
                     ShowText("Введите корректную дату рождения (например 02.08.1999):");
                     birthday = GetTextFromUser();
@@ -293,7 +284,7 @@ namespace happyBirthday
         }
 
 
-        public bool ValidInput(string name="nameParam", string birthday = "birthdayParam")
+        public bool ValidInput(string name = "nameParam", string birthday = "birthdayParam")
         {
             if (name == "nameParam" && birthday == "birthdayParam") return false;
             if (name != "nameParam")

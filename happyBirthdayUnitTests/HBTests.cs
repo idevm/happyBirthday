@@ -29,7 +29,7 @@ namespace happyBirthdayUnitTests
         [TestCase("db.xls")][TestCase("db.txt")][TestCase("../db.csv")]
         public void ReadFile_BadFiles_ThrowException(string path)
         {
-            Exception ex = Assert.Catch(() => P.ReadFile(path));
+            Exception ex = Assert.Catch(() => Program.ReadFile(path));
             StringAssert.Contains("Не найден файл с данными, а именно: ", ex.Message);
         }
 
@@ -37,7 +37,7 @@ namespace happyBirthdayUnitTests
         [Test]
         public void GetPeopleList_OneMan_ReturnsPeopleList()
         {
-            string[] lines = new string[1] { $"1;;Ivan;;{ThisDay}.{ThisMonth}.2000;" };
+            string[] lines = { $"1;;Ivan;;{ThisDay}.{ThisMonth}.2000;" };
             List<Dictionary<string, string>> exp = new();
             Dictionary<string, string> man = new();
             man.Add("name", "Ivan");
@@ -53,7 +53,7 @@ namespace happyBirthdayUnitTests
         [Test]
         public void GetPeopleList_MoreMen_ReturnsPeopleList()
         {
-            string[] lines = new string[2] { $"1;;Ivan;;{ThisDay}.{ThisMonth}.1990;", $"2;;Iva;;{ThisDay}.{ThisMonth}.1991;" };
+            string[] lines = { $"1;;Ivan;;{ThisDay}.{ThisMonth}.1990;", $"2;;Iva;;{ThisDay}.{ThisMonth}.1991;" };
             List<Dictionary<string, string>> exp = new();
             foreach (string line in lines)
             {
@@ -76,7 +76,7 @@ namespace happyBirthdayUnitTests
             string tomorrow = (int.Parse(ThisDay) + 1).ToString().Length == 2
             ? (int.Parse(ThisDay) + 1).ToString()
             : "0" + (int.Parse(ThisDay) + 1).ToString();
-            string[] lines = new string[2] { $"1;;Ivan;;{tomorrow}.{ThisMonth}.1990;", $"2;;Iva;;{tomorrow}.{ThisMonth}.1991;" };
+            string[] lines = { $"1;;Ivan;;{tomorrow}.{ThisMonth}.1990;", $"2;;Iva;;{tomorrow}.{ThisMonth}.1991;" };
             List<Dictionary<string, string>> exp = new();
             List<Dictionary<string, string>> res = P.GetPeopleList(lines);
             Assert.AreEqual(exp, res);
@@ -106,7 +106,7 @@ namespace happyBirthdayUnitTests
         [TestCase("1;")][TestCase("1")][TestCase("")]
         public void GetPeopleList_BadFormatting_ThrowsExceptiion(string line)
         {
-            string[] lines = new string[1] { line };
+            string[] lines = { line };
             Exception ex = Assert.Catch(() => P.GetPeopleList(lines));
             StringAssert.Contains("Неправильный формат таблицы", ex.Message);
         }
@@ -115,7 +115,7 @@ namespace happyBirthdayUnitTests
         [Test]
         public void GetPeopleList_NoName_ThrowsExceptiion()
         {
-            string[] lines = new string[1] { "1;;;;01.01.1990;" };
+            string[] lines = { "1;;;;01.01.1990;" };
             Exception ex = Assert.Catch(() => P.GetPeopleList(lines));
             StringAssert.Contains("Отсутствует имя в строке 1", ex.Message);
         }
@@ -125,7 +125,7 @@ namespace happyBirthdayUnitTests
         [TestCase("1;;Ivan;;f.01.1990;")][TestCase("1;;Ivan;;33.01.1990;")]
         public void GetPeopleList_BadDay_ThrowsExceptiion(string line)
         {
-            string[] lines = new string[1] { line };
+            string[] lines = { line };
             Exception ex = Assert.Catch(() => P.GetPeopleList(lines));
             StringAssert.Contains("Неправильный формат дня в строке 1", ex.Message);
         }
@@ -135,7 +135,7 @@ namespace happyBirthdayUnitTests
         [TestCase("1;;Ivan;;01.h.1990;")][TestCase("1;;Ivan;;01.22.1990;")]
         public void GetPeopleList_BadMonth_ThrowsExceptiion(string line)
         {
-            string[] lines = new string[1] { line };
+            string[] lines = { line };
             Exception ex = Assert.Catch(() => P.GetPeopleList(lines));
             StringAssert.Contains("Неправильный формат месяца в строке 1", ex.Message);
         }
@@ -145,7 +145,7 @@ namespace happyBirthdayUnitTests
         [TestCase("1;;Ivan;;01.01.d;")][TestCase("1;;Ivan;;01.01.;")]
         public void GetPeopleList_BadYear_ThrowsExceptiion(string line)
         {
-            string[] lines = new string[1] { line };
+            string[] lines = { line };
             Exception ex = Assert.Catch(() => P.GetPeopleList(lines));
             StringAssert.Contains("Неправильный формат года в строке 1", ex.Message);
         }
@@ -276,7 +276,7 @@ namespace happyBirthdayUnitTests
         [TestCase("Ivan", "01.01.1990", "1;;IVAN;;01.01.1990;\n")]
         public void AddText_NoDataOneValidInput_ReturnsText(string name, string birthday, string exp)
         {
-            string[] lines = new string[0];
+            string[] lines = Array.Empty<string>();
             string res = P.AddText(lines, name, birthday);
             Assert.AreEqual(exp, res);
         }
@@ -294,7 +294,7 @@ namespace happyBirthdayUnitTests
         [TestCase("Ivan", "01.01.1990", "3;;IVAN;;01.01.1990;\n")]
         public void AddText_SomeDataOneValidInput_ReturnsText(string name, string birthday, string exp)
         {
-            string[] lines = new string[2] { "1;;Boris;;01.01.1990;\n", "2;;Vlad;;01.02.1980;\n" };
+            string[] lines = { "1;;Boris;;01.01.1990;\n", "2;;Vlad;;01.02.1980;\n" };
             string res = P.AddText(lines, name, birthday);
             Assert.AreEqual(exp, res);
         }
@@ -303,7 +303,7 @@ namespace happyBirthdayUnitTests
         [TestCase("", "01.01.1990")]
         public void AddText_BadNameInput_ThrowsException(string name, string birthday)
         {
-            string[] lines = new string[0];
+            string[] lines = Array.Empty<string>();
             Exception ex = Assert.Catch(() => P.AddText(lines, name, birthday));
             StringAssert.Contains("Введены некорректные данные\nВведите корректные ФИО (например Иванов Иван Иванович)", ex.Message);
         }
@@ -316,7 +316,7 @@ namespace happyBirthdayUnitTests
         [TestCase("Ivan", "1.1.1990")][TestCase("Ivan", "f")][TestCase("Ivan","..")]
         public void AddText_BadBirthdayInputs_ThrowsException(string name, string birthday)
         {
-            string[] lines = new string[0];
+            string[] lines = Array.Empty<string>();
             Exception ex = Assert.Catch(() => P.AddText(lines, name, birthday));
             StringAssert.Contains("Введены некорректные данные\nВведите корректную дату рождения (например 02.08.1999)", ex.Message);
         }
