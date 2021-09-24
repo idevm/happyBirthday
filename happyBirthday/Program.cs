@@ -110,11 +110,13 @@ namespace happyBirthday
                     {
                         if (month == MonthNow && day == DayNow)
                         {
-                            Dictionary<string, string> man = new();
-                            man.Add("name", name);
-                            man.Add("day", day);
-                            man.Add("month", month);
-                            man.Add("year", year);
+                            Dictionary<string, string> man = new()
+                            {
+                                ["name"] = name,
+                                ["day"] = day,
+                                ["month"] = month,
+                                ["year"] = year
+                            };
                             people.Add(man);
                         }
                     }
@@ -122,11 +124,13 @@ namespace happyBirthday
                     {
                         if (month == MonthNow)
                         {
-                            Dictionary<string, string> man = new();
-                            man.Add("name", name);
-                            man.Add("day", day);
-                            man.Add("month", month);
-                            man.Add("year", year);
+                            Dictionary<string, string> man = new()
+                            {
+                                ["name"] = name,
+                                ["day"] = day,
+                                ["month"] = month,
+                                ["year"] = year
+                            };
                             people.Add(man);
                         }
                     }

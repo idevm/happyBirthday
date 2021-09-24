@@ -38,13 +38,16 @@ namespace happyBirthdayUnitTests
         public void GetPeopleList_OneMan_ReturnsPeopleList()
         {
             string[] lines = { $"1;;Ivan;;{ThisDay}.{ThisMonth}.2000;" };
-            List<Dictionary<string, string>> exp = new();
-            Dictionary<string, string> man = new();
-            man.Add("name", "Ivan");
-            man.Add("day", ThisDay);
-            man.Add("month", ThisMonth);
-            man.Add("year", "2000");
-            exp.Add(man);
+            List<Dictionary<string, string>> exp = new()
+            {
+                new Dictionary<string, string>()
+                {
+                    ["name"] = "Ivan",
+                    ["day"] = ThisDay,
+                    ["month"] = ThisMonth,
+                    ["year"] = "2000"
+                }
+            };
             List<Dictionary<string, string>> res = P.GetPeopleList(lines);
             Assert.AreEqual(exp, res);
         }
@@ -164,13 +167,16 @@ namespace happyBirthdayUnitTests
         [Test]
         public void GetTextToday_OnePeople_ReturnsText()
         {
-            List<Dictionary<string, string>> people = new();
-            Dictionary<string, string> man = new();
-            man.Add("name", "Ivan");
-            man.Add("day", ThisDay);
-            man.Add("month", ThisMonth);
-            man.Add("year", "1990");
-            people.Add(man);
+            List<Dictionary<string, string>> people = new()
+            {
+                new Dictionary<string, string>()
+                {
+                    ["name"] = "Ivan",
+                    ["day"] = ThisDay,
+                    ["month"] = ThisMonth,
+                    ["year"] = "1990"
+                }
+            };
             P.YearNow = 2020;
             string exp = $"Сегодня {ThisDay}.{ThisMonth} отмечает день рождения\n\n\tIvan (30 лет)\n";
             string res = P.GetTextToday(people);
@@ -181,19 +187,23 @@ namespace happyBirthdayUnitTests
         [Test]
         public void GetTextToday_MorePeople_ReturnsText()
         {
-            List<Dictionary<string, string>> people = new();
-            Dictionary<string, string> man1 = new();
-            Dictionary<string, string> man2 = new();
-            man1.Add("name", "Ivan");
-            man1.Add("day", ThisDay);
-            man1.Add("month", ThisMonth);
-            man1.Add("year", "1990");
-            people.Add(man1);
-            man2.Add("name", "Iva");
-            man2.Add("day", ThisDay);
-            man2.Add("month", ThisMonth);
-            man2.Add("year", "1991");
-            people.Add(man2);
+            List<Dictionary<string, string>> people = new()
+            {
+                new Dictionary<string, string>()
+                {
+                    ["name"] = "Ivan",
+                    ["day"] = ThisDay,
+                    ["month"] = ThisMonth,
+                    ["year"] = "1990"
+                },
+                new Dictionary<string, string> ()
+                {
+                    ["name"] = "Iva",
+                    ["day"] = ThisDay,
+                    ["month"] = ThisMonth,
+                    ["year"] = "1991"
+                }
+            };
             P.YearNow = 2020;
             string exp = $"Сегодня {ThisDay}.{ThisMonth} отмечают день рождения:\n\n\tIvan (30 лет)\n\tIva (29 лет)\n";
             string res = P.GetTextToday(people);
@@ -214,13 +224,16 @@ namespace happyBirthdayUnitTests
         [Test]
         public void GetTextThisMonth_OnePeople_ReturnsText()
         {
-            List<Dictionary<string, string>> people = new();
-            Dictionary<string, string> man = new();
-            man.Add("name", "Ivan");
-            man.Add("day", "31");
-            man.Add("month", ThisMonth);
-            man.Add("year", "1990");
-            people.Add(man);
+            List<Dictionary<string, string>> people = new()
+            {
+                new Dictionary<string, string>()
+                {
+                    ["name"] = "Ivan",
+                    ["day"] = "31",
+                    ["month"] = ThisMonth,
+                    ["year"] = "1990"
+                }
+            };
             P.YearNow = 2020;
             string exp = $"В этом месяце отмечает день рождения\n\n\tIvan (31.{ThisMonth})\n";
             string res = P.GetTextThisMonth(people);
@@ -231,19 +244,23 @@ namespace happyBirthdayUnitTests
         [Test]
         public void GetTextThisMonth_MorePeople_ReturnsText()
         {
-            List<Dictionary<string, string>> people = new();
-            Dictionary<string, string> man1 = new();
-            Dictionary<string, string> man2 = new();
-            man1.Add("name", "Ivan");
-            man1.Add("day", "31");
-            man1.Add("month", ThisMonth);
-            man1.Add("year", "1990");
-            people.Add(man1);
-            man2.Add("name", "Iva");
-            man2.Add("day", "13");
-            man2.Add("month", ThisMonth);
-            man2.Add("year", "1991");
-            people.Add(man2);
+            List<Dictionary<string, string>> people = new()
+            {
+                new Dictionary<string, string>()
+                {
+                    ["name"] = "Ivan",
+                    ["day"] = "31",
+                    ["month"] = ThisMonth,
+                    ["year"] = "1990"
+                },
+                new Dictionary<string, string> ()
+                {
+                    ["name"] = "Iva",
+                    ["day"] = "13",
+                    ["month"] = ThisMonth,
+                    ["year"] = "1991"
+                }
+            };
             P.YearNow = 2020;
             string exp = $"В этом месяце отмечают день рождения:\n\n\tIvan (31.{ThisMonth})\n\tIva (13.{ThisMonth})\n";
             string res = P.GetTextThisMonth(people);
