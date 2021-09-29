@@ -86,13 +86,43 @@ namespace happyBirthdayUnitTests
             string tomorrow = (int.Parse(ThisDay) + 1).ToString().Length == 2
             ? (int.Parse(ThisDay) + 1).ToString()
             : "0" + (int.Parse(ThisDay) + 1).ToString();
-            List<string> lines = new ()
+            List<string> lines = new()
             {
                 $"1;;Ivan;;{tomorrow}.{ThisMonth}.1990;",
                 $"2;;Iva;;{tomorrow}.{ThisMonth}.1991;"
             };
             List<Dictionary<string, string>> exp = new();
             List<Dictionary<string, string>> res = app.GetPeopleList(lines);
+            Assert.AreEqual(exp, res);
+        }
+
+
+        [TestCase(TimeMode.today, 1)]
+        [TestCase(TimeMode.thisMonth, 2)]
+        [TestCase(TimeMode.thisYear, 3)]
+        public void GetPeopleList_SomeTimeModes_ReturnsPeopleList(TimeMode tm, int CountOfCorrectLines)
+        {
+            app.DayNow = "01";
+            app.MonthNow = "01";
+            app.YearNow = 2021;
+            List<string> lines = new()
+            {
+                "1;;Ivan1;;01.01.1990;",
+                "2;;Ivan2;;02.01.1991;",
+                "3;;Ivan3;;02.02.1992;"
+            };
+            List<Dictionary<string, string>> exp = new();
+            for (int i = 0; i < CountOfCorrectLines; i++)
+            {
+                string[] values = lines[i].Split(";");
+                Dictionary<string, string> man = new();
+                man.Add("name", values[2]);
+                man.Add("day", values[4].Split(".")[0]);
+                man.Add("month", values[4].Split(".")[1]);
+                man.Add("year", values[4].Split(".")[2]);
+                exp.Add(man);
+            }
+            List<Dictionary<string, string>> res = app.GetPeopleList(lines, tm);
             Assert.AreEqual(exp, res);
         }
 
@@ -264,7 +294,7 @@ namespace happyBirthdayUnitTests
                     ["month"] = ThisMonth,
                     ["year"] = "1990"
                 },
-                new Dictionary<string, string> ()
+                new Dictionary<string, string>()
                 {
                     ["name"] = "Iva",
                     ["day"] = "13",
@@ -275,6 +305,63 @@ namespace happyBirthdayUnitTests
             app.YearNow = 2020;
             string exp = $"В этом месяце отмечают день рождения:\n\n\tIvan (31.{ThisMonth})\n\tIva (13.{ThisMonth})\n";
             string res = app.GetText(people, TimeMode.thisMonth);
+            Assert.AreEqual(exp, res);
+        }
+
+
+        [Test]
+        public void GetText_NoPeopleThisYear_ReturnsText()
+        {
+            List<Dictionary<string, string>> people = new();
+            string exp = "В этом году никто не отмечает день рождения";
+            string res = app.GetText(people, TimeMode.thisYear);
+            Assert.AreEqual(exp, res);
+        }
+
+
+        [Test]
+        public void GetText_OneManThisYear_ReturnsText()
+        {
+            List<Dictionary<string, string>> people = new()
+            {
+                new Dictionary<string, string>()
+                {
+                    ["name"] = "Ivan",
+                    ["day"] = "31",
+                    ["month"] = "01",
+                    ["year"] = "1990"
+                }
+            };
+            app.YearNow = 2020;
+            string exp = $"В этом году отмечает день рождения\n\n\tIvan (31.01)\n";
+            string res = app.GetText(people, TimeMode.thisYear);
+            Assert.AreEqual(exp, res);
+        }
+
+
+        [Test]
+        public void GetText_MorePeopleThisYear_ReturnsText()
+        {
+            List<Dictionary<string, string>> people = new()
+            {
+                new Dictionary<string, string>()
+                {
+                    ["name"] = "Ivan",
+                    ["day"] = "01",
+                    ["month"] = "01",
+                    ["year"] = "1990"
+                },
+                new Dictionary<string, string>()
+                {
+                    ["name"] = "Iva",
+                    ["day"] = "01",
+                    ["month"] = "02",
+                    ["year"] = "1991"
+                }
+            };
+            app.YearNow = 2020;
+            string exp = $"В этом году отмечают день рождения:\n\n\tIvan (01.01)\n\tIva (01.02)\n";
+            string res = app.GetText(people, TimeMode.thisYear);
             Assert.AreEqual(exp, res);
         }
 

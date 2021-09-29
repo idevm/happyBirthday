@@ -18,8 +18,12 @@ namespace happyBirthday
                 app.People = app.GetPeopleList(app.Lines, TimeMode.thisMonth);
                 app.Text = app.GetText(app.People, TimeMode.thisMonth);
                 app.ShowText(app.Text);
+                //thisYear
+                app.People = app.GetPeopleList(app.Lines, TimeMode.thisYear);
+                app.Text = app.GetText(app.People, TimeMode.thisYear);
+                app.ShowText(app.Text);
                 //createNewBirthDay
-                app.WriteFile("db.csv", app.AddText(app.Lines));
+                //app.WriteFile("db.csv", app.AddText(app.Lines));
             }
             catch (System.IO.FileNotFoundException ex)
             {

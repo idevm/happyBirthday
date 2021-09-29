@@ -18,11 +18,10 @@ namespace happyBirthday
         private List<Dictionary<string, string>> people = new();
         private string text;
 
-        private string DayNow { get; } = DateTime.Now.Day.ToString().Length == 2
-            ? DateTime.Now.Day.ToString()
-            : "0" + DateTime.Now.Day.ToString();
-
-        private string MonthNow { get; } = DateTime.Now.Month.ToString().Length == 2
+        public string DayNow { get; set; } = DateTime.Now.Day.ToString().Length == 2
+                    ? DateTime.Now.Day.ToString()
+                    : "0" + DateTime.Now.Day.ToString();
+        public string MonthNow { get; set; } = DateTime.Now.Month.ToString().Length == 2
             ? DateTime.Now.Month.ToString()
             : "0" + DateTime.Now.Month.ToString();
 
@@ -101,30 +100,38 @@ namespace happyBirthday
                         case TimeMode.today:
                             if (month == MonthNow && day == DayNow)
                             {
-                                Dictionary<string, string> man = new()
+                                Dictionary<string, string> manD = new()
                                 {
                                     ["name"] = name,
                                     ["day"] = day,
                                     ["month"] = month,
                                     ["year"] = year
                                 };
-                                people.Add(man);
+                                people.Add(manD);
                             }
                             break;
                         case TimeMode.thisMonth:
                             if (month == MonthNow)
                             {
-                                Dictionary<string, string> man = new()
+                                Dictionary<string, string> manM = new()
                                 {
                                     ["name"] = name,
                                     ["day"] = day,
                                     ["month"] = month,
                                     ["year"] = year
                                 };
-                                people.Add(man);
+                                people.Add(manM);
                             }
                             break;
                         case TimeMode.thisYear:
+                            Dictionary<string, string> manY = new()
+                            {
+                                ["name"] = name,
+                                ["day"] = day,
+                                ["month"] = month,
+                                ["year"] = year
+                            };
+                            people.Add(manY);
                             break;
                     }
                 }
@@ -160,6 +167,11 @@ namespace happyBirthday
                         }
                         break;
                     case TimeMode.thisYear:
+                        text.Append($"В этом году отмечают день рождения:\n\n");
+                        foreach (Dictionary<string, string> man in people)
+                        {
+                            text.Append($"\t{man["name"]} ({man["day"]}.{man["month"]})\n");
+                        }
                         break;
                 }
             }
@@ -178,6 +190,9 @@ namespace happyBirthday
                             : $"В этом месяце никто не отмечает день рождения");
                         break;
                     case TimeMode.thisYear:
+                        text.Append(people.Count == 1
+                            ? $"В этом году отмечает день рождения\n\n\t{people[0]["name"]} ({people[0]["day"]}.{people[0]["month"]})\n"
+                            : $"В этом году никто не отмечает день рождения");
                         break;
                 }
             }
