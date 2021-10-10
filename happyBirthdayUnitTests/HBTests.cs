@@ -10,13 +10,9 @@ namespace happyBirthdayUnitTests
     {
         private HBApp app;
 
-        private string ThisDay { get; } = DateTime.Now.Day.ToString().Length == 2
-            ? DateTime.Now.Day.ToString()
-            : "0" + DateTime.Now.Day.ToString();
+        private int ThisDay { get; } = DateTime.Now.Day;
 
-        private string ThisMonth { get; } = DateTime.Now.Month.ToString().Length == 2
-            ? DateTime.Now.Month.ToString()
-            : "0" + DateTime.Now.Month.ToString();
+        private int ThisMonth { get; } = DateTime.Now.Month;
 
         [SetUp]
         public void SetUp()
@@ -39,20 +35,22 @@ namespace happyBirthdayUnitTests
         {
             List<string> lines = new()
             {
-                $"1;;Ivan;;{ThisDay}.{ThisMonth}.2000;"
+                $"1;;Ivan;;{app.ToString(ThisDay)}.{app.ToString(ThisMonth)}.2000;"
             };
-            List<Dictionary<string, string>> exp = new()
+            List<Person> exp = new()
             {
-                new Dictionary<string, string>()
+                new Person("Ivan")
                 {
-                    ["name"] = "Ivan",
-                    ["day"] = ThisDay,
-                    ["month"] = ThisMonth,
-                    ["year"] = "2000"
+                    Birthday = ThisDay,
+                    Birthmonth = ThisMonth,
+                    Birthyear = 2000
                 }
             };
-            List<Dictionary<string, string>> res = app.GetPeopleList(lines);
-            Assert.AreEqual(exp, res);
+            List<Person> res = app.GetPeopleList(lines);
+            Assert.AreEqual(exp[0].Birthday, res[0].Birthday);
+            Assert.AreEqual(exp[0].Birthmonth, res[0].Birthmonth);
+            Assert.AreEqual(exp[0].Birthyear, res[0].Birthyear);
+            Assert.AreEqual(exp[0].Name, res[0].Name);
         }
 
 
@@ -61,38 +59,57 @@ namespace happyBirthdayUnitTests
         {
             List<string> lines = new()
             {
-                $"1;;Ivan;;{ThisDay}.{ThisMonth}.1990;",
-                $"2;;Iva;;{ThisDay}.{ThisMonth}.1991;"
+                $"1;;Ivan;;{app.ToString(ThisDay)}.{app.ToString(ThisMonth)}.1990;",
+                $"2;;Iva;;{app.ToString(ThisDay)}.{app.ToString(ThisMonth)}.1991;"
             };
-            List<Dictionary<string, string>> exp = new();
-            foreach (string line in lines)
+            List<Person> exp = new()
             {
-                string[] values = line.Split(";");
-                Dictionary<string, string> man = new();
-                man.Add("name", values[2]);
-                man.Add("day", values[4].Split(".")[0]);
-                man.Add("month", values[4].Split(".")[1]);
-                man.Add("year", values[4].Split(".")[2]);
-                exp.Add(man);
-            }
-            List<Dictionary<string, string>> res = app.GetPeopleList(lines);
-            Assert.AreEqual(exp, res);
+                new Person("Ivan")
+                {
+                    Birthday = ThisDay,
+                    Birthmonth = ThisMonth,
+                    Birthyear = 1990
+                },
+                new Person("Iva")
+                {
+                    Birthday = ThisDay,
+                    Birthmonth = ThisMonth,
+                    Birthyear = 1991
+                }
+            };
+            List<Person> res = app.GetPeopleList(lines);
+            Assert.AreEqual(exp[0].Birthday, res[0].Birthday);
+            Assert.AreEqual(exp[0].Birthmonth, res[0].Birthmonth);
+            Assert.AreEqual(exp[0].Birthyear, res[0].Birthyear);
+            Assert.AreEqual(exp[0].Name, res[0].Name);
+            Assert.AreEqual(exp[1].Birthday, res[1].Birthday);
+            Assert.AreEqual(exp[1].Birthmonth, res[1].Birthmonth);
+            Assert.AreEqual(exp[1].Birthyear, res[1].Birthyear);
+            Assert.AreEqual(exp[1].Name, res[1].Name);
         }
 
 
         [Test]
-        public void GetPeopleList_ValidDataButNoBirthdays_ReturnsEmptyPeopleList()
+        public void PeopleListFilter_ValidDataButNoBirthdays_ReturnsEmptyPeopleList()
         {
-            string tomorrow = (int.Parse(ThisDay) + 1).ToString().Length == 2
-            ? (int.Parse(ThisDay) + 1).ToString()
-            : "0" + (int.Parse(ThisDay) + 1).ToString();
-            List<string> lines = new()
+            int tomorrow = ThisDay + 1;
+            List<Person> people = new()
             {
-                $"1;;Ivan;;{tomorrow}.{ThisMonth}.1990;",
-                $"2;;Iva;;{tomorrow}.{ThisMonth}.1991;"
+                new Person("Ivan")
+                {
+                    Birthday = tomorrow,
+                    Birthmonth = ThisMonth,
+                    Birthyear = 1990
+                },
+                new Person("Iva")
+                {
+                    Birthday = tomorrow,
+                    Birthmonth = ThisMonth,
+                    Birthyear = 1991
+                }
             };
-            List<Dictionary<string, string>> exp = new();
-            List<Dictionary<string, string>> res = app.GetPeopleList(lines);
+            List <Person> exp = new();
+            List<Person> res = app.PeopleListFilter(people);
             Assert.AreEqual(exp, res);
         }
 
@@ -100,29 +117,38 @@ namespace happyBirthdayUnitTests
         [TestCase(TimeMode.today, 1)]
         [TestCase(TimeMode.thisMonth, 2)]
         [TestCase(TimeMode.thisYear, 3)]
-        public void GetPeopleList_SomeTimeModes_ReturnsPeopleList(TimeMode tm, int CountOfCorrectLines)
+        public void PeopleListFilter_SomeTimeModes_ReturnsPeopleList(TimeMode tm, int CountOfCorrectLines)
         {
-            app.DayNow = "01";
-            app.MonthNow = "01";
+            app.DayNow = 1;
+            app.MonthNow = 1;
             app.YearNow = 2021;
-            List<string> lines = new()
+            List<Person> people = new()
             {
-                "1;;Ivan1;;01.01.1990;",
-                "2;;Ivan2;;02.01.1991;",
-                "3;;Ivan3;;02.02.1992;"
+                new Person("Ivan1")
+                {
+                    Birthday = 1,
+                    Birthmonth = 1,
+                    Birthyear = 1990
+                },
+                new Person("Ivan2")
+                {
+                    Birthday = 2,
+                    Birthmonth = 1,
+                    Birthyear = 1991
+                },
+                new Person("Ivan3")
+                {
+                    Birthday = 2,
+                    Birthmonth = 2,
+                    Birthyear = 1992
+                }
             };
-            List<Dictionary<string, string>> exp = new();
+            List<Person> exp = new();
             for (int i = 0; i < CountOfCorrectLines; i++)
             {
-                string[] values = lines[i].Split(";");
-                Dictionary<string, string> man = new();
-                man.Add("name", values[2]);
-                man.Add("day", values[4].Split(".")[0]);
-                man.Add("month", values[4].Split(".")[1]);
-                man.Add("year", values[4].Split(".")[2]);
-                exp.Add(man);
+                exp.Add(people[i]);
             }
-            List<Dictionary<string, string>> res = app.GetPeopleList(lines, tm);
+            List<Person> res = app.PeopleListFilter(people,tm);
             Assert.AreEqual(exp, res);
         }
 
@@ -198,8 +224,8 @@ namespace happyBirthdayUnitTests
         [Test]
         public void GetText_NoPeopleToday_ReturnsText()
         {
-            List<Dictionary<string, string>> people = new();
-            string exp = $"Сегодня {ThisDay}.{ThisMonth} никто не отмечает день рождения";
+            List<Person> people = new();
+            string exp = $"Сегодня {app.ToString(ThisDay)}.{app.ToString(ThisMonth)} никто не отмечает день рождения";
             string res = app.GetText(people, TimeMode.today);
             Assert.AreEqual(exp, res);
         }
@@ -208,18 +234,17 @@ namespace happyBirthdayUnitTests
         [Test]
         public void GetText_OneManToday_ReturnsText()
         {
-            List<Dictionary<string, string>> people = new()
+            List<Person> people = new()
             {
-                new Dictionary<string, string>()
+                new Person("Ivan")
                 {
-                    ["name"] = "Ivan",
-                    ["day"] = ThisDay,
-                    ["month"] = ThisMonth,
-                    ["year"] = "1990"
+                    Birthday = ThisDay,
+                    Birthmonth = ThisMonth,
+                    Birthyear = 1990
                 }
             };
             app.YearNow = 2020;
-            string exp = $"Сегодня {ThisDay}.{ThisMonth} отмечает день рождения\n\n\tIvan (30 лет)\n";
+            string exp = $"Сегодня {app.ToString(ThisDay)}.{app.ToString(ThisMonth)} отмечает день рождения\n\n\tIvan (30 лет)\n";
             string res = app.GetText(people, TimeMode.today);
             Assert.AreEqual(exp, res);
         }
@@ -228,25 +253,23 @@ namespace happyBirthdayUnitTests
         [Test]
         public void GetText_MorePeopleToday_ReturnsText()
         {
-            List<Dictionary<string, string>> people = new()
+            List<Person> people = new()
             {
-                new Dictionary<string, string>()
+                new Person("Ivan")
                 {
-                    ["name"] = "Ivan",
-                    ["day"] = ThisDay,
-                    ["month"] = ThisMonth,
-                    ["year"] = "1990"
+                    Birthday = ThisDay,
+                    Birthmonth = ThisMonth,
+                    Birthyear = 1990
                 },
-                new Dictionary<string, string> ()
+                new Person ("Iva")
                 {
-                    ["name"] = "Iva",
-                    ["day"] = ThisDay,
-                    ["month"] = ThisMonth,
-                    ["year"] = "1991"
+                    Birthday = ThisDay,
+                    Birthmonth = ThisMonth,
+                    Birthyear = 1991
                 }
             };
             app.YearNow = 2020;
-            string exp = $"Сегодня {ThisDay}.{ThisMonth} отмечают день рождения:\n\n\tIvan (30 лет)\n\tIva (29 лет)\n";
+            string exp = $"Сегодня {app.ToString(ThisDay)}.{app.ToString(ThisMonth)} отмечают день рождения:\n\n\tIvan (30 лет)\n\tIva (29 лет)\n";
             string res = app.GetText(people, TimeMode.today);
             Assert.AreEqual(exp, res);
         }
@@ -255,7 +278,7 @@ namespace happyBirthdayUnitTests
         [Test]
         public void GetText_NoPeopleThisMonth_ReturnsText()
         {
-            List<Dictionary<string, string>> people = new();
+            List<Person> people = new();
             string exp = "В этом месяце никто не отмечает день рождения";
             string res = app.GetText(people, TimeMode.thisMonth);
             Assert.AreEqual(exp, res);
@@ -265,18 +288,17 @@ namespace happyBirthdayUnitTests
         [Test]
         public void GetText_OneManThisMonth_ReturnsText()
         {
-            List<Dictionary<string, string>> people = new()
+            List<Person> people = new()
             {
-                new Dictionary<string, string>()
+                new Person("Ivan")
                 {
-                    ["name"] = "Ivan",
-                    ["day"] = "31",
-                    ["month"] = ThisMonth,
-                    ["year"] = "1990"
+                    Birthday = 31,
+                    Birthmonth = ThisMonth,
+                    Birthyear = 1990
                 }
             };
             app.YearNow = 2020;
-            string exp = $"В этом месяце отмечает день рождения\n\n\tIvan (31.{ThisMonth})\n";
+            string exp = $"В этом месяце отмечает день рождения\n\n\tIvan (31.{app.ToString(ThisMonth)})\n";
             string res = app.GetText(people, TimeMode.thisMonth);
             Assert.AreEqual(exp, res);
         }
@@ -285,25 +307,23 @@ namespace happyBirthdayUnitTests
         [Test]
         public void GetText_MorePeopleThisMonth_ReturnsText()
         {
-            List<Dictionary<string, string>> people = new()
+            List<Person> people = new()
             {
-                new Dictionary<string, string>()
+                new Person("Ivan")
                 {
-                    ["name"] = "Ivan",
-                    ["day"] = "31",
-                    ["month"] = ThisMonth,
-                    ["year"] = "1990"
+                    Birthday = 31,
+                    Birthmonth = ThisMonth,
+                    Birthyear = 1990
                 },
-                new Dictionary<string, string>()
+                new Person("Iva")
                 {
-                    ["name"] = "Iva",
-                    ["day"] = "13",
-                    ["month"] = ThisMonth,
-                    ["year"] = "1991"
+                    Birthday = 13,
+                    Birthmonth = ThisMonth,
+                    Birthyear = 1991
                 }
             };
             app.YearNow = 2020;
-            string exp = $"В этом месяце отмечают день рождения:\n\n\tIvan (31.{ThisMonth})\n\tIva (13.{ThisMonth})\n";
+            string exp = $"В этом месяце отмечают день рождения:\n\n\tIvan (31.{app.ToString(ThisMonth)})\n\tIva (13.{app.ToString(ThisMonth)})\n";
             string res = app.GetText(people, TimeMode.thisMonth);
             Assert.AreEqual(exp, res);
         }
@@ -312,7 +332,7 @@ namespace happyBirthdayUnitTests
         [Test]
         public void GetText_NoPeopleThisYear_ReturnsText()
         {
-            List<Dictionary<string, string>> people = new();
+            List<Person> people = new();
             string exp = "В этом году никто не отмечает день рождения";
             string res = app.GetText(people, TimeMode.thisYear);
             Assert.AreEqual(exp, res);
@@ -322,14 +342,13 @@ namespace happyBirthdayUnitTests
         [Test]
         public void GetText_OneManThisYear_ReturnsText()
         {
-            List<Dictionary<string, string>> people = new()
+            List<Person> people = new()
             {
-                new Dictionary<string, string>()
+                new Person("Ivan")
                 {
-                    ["name"] = "Ivan",
-                    ["day"] = "31",
-                    ["month"] = "01",
-                    ["year"] = "1990"
+                    Birthday = 31,
+                    Birthmonth = 01,
+                    Birthyear = 1990
                 }
             };
             app.YearNow = 2020;
@@ -342,21 +361,19 @@ namespace happyBirthdayUnitTests
         [Test]
         public void GetText_MorePeopleThisYear_ReturnsText()
         {
-            List<Dictionary<string, string>> people = new()
+            List<Person> people = new()
             {
-                new Dictionary<string, string>()
+                new Person("Ivan")
                 {
-                    ["name"] = "Ivan",
-                    ["day"] = "01",
-                    ["month"] = "01",
-                    ["year"] = "1990"
+                    Birthday = 01,
+                    Birthmonth = 01,
+                    Birthyear = 1990
                 },
-                new Dictionary<string, string>()
+                new Person("Iva")
                 {
-                    ["name"] = "Iva",
-                    ["day"] = "01",
-                    ["month"] = "02",
-                    ["year"] = "1991"
+                    Birthday = 01,
+                    Birthmonth = 02,
+                    Birthyear = 1991
                 }
             };
             app.YearNow = 2020;
@@ -366,60 +383,136 @@ namespace happyBirthdayUnitTests
         }
 
 
-        [TestCase("0", "0 лет")][TestCase("1", "1 год")][TestCase("2", "2 года")]
-        [TestCase("3", "3 года")][TestCase("4", "4 года")][TestCase("5", "5 лет")]
-        [TestCase("6", "6 лет")][TestCase("7", "7 лет")][TestCase("8", "8 лет")]
-        [TestCase("9", "9 лет")][TestCase("10", "10 лет")][TestCase("11", "11 лет")]
-        [TestCase("12", "12 лет")][TestCase("13", "13 лет")][TestCase("14", "14 лет")]
-        [TestCase("15", "15 лет")][TestCase("16", "16 лет")][TestCase("17", "17 лет")]
-        [TestCase("18", "18 лет")][TestCase("19", "19 лет")][TestCase("20", "20 лет")]
-        [TestCase("21", "21 год")][TestCase("22", "22 года")][TestCase("23", "23 года")]
-        [TestCase("24", "24 года")][TestCase("25", "25 лет")][TestCase("30", "30 лет")]
-        [TestCase("33", "33 года")][TestCase("35", "35 лет")][TestCase("49", "49 лет")]
-        [TestCase("50", "юбилей: 50 лет")][TestCase("51", "51 год")][TestCase("55", "юбилей: 55 лет")]
-        [TestCase("80", "юбилей: 80 лет")][TestCase("81", "81 год")][TestCase("100", "юбилей: 100 лет")]
-        [TestCase("101", "101 год")][TestCase("102", "102 года")][TestCase("103", "103 года")]
-        [TestCase("105", "юбилей: 105 лет")][TestCase("205", "юбилей: 205 лет")][TestCase("301", "301 год")]
-        public void GetAge_SomeYears_ReturnsText(string year, string exp)
+        [TestCase(0, "0 лет")][TestCase(1, "1 год")][TestCase(2, "2 года")]
+        [TestCase(3, "3 года")][TestCase(4, "4 года")][TestCase(5, "5 лет")]
+        [TestCase(6, "6 лет")][TestCase(7, "7 лет")][TestCase(8, "8 лет")]
+        [TestCase(9, "9 лет")][TestCase(10, "10 лет")][TestCase(11, "11 лет")]
+        [TestCase(12, "12 лет")][TestCase(13, "13 лет")][TestCase(14, "14 лет")]
+        [TestCase(15, "15 лет")][TestCase(16, "16 лет")][TestCase(17, "17 лет")]
+        [TestCase(18, "18 лет")][TestCase(19, "19 лет")][TestCase(20, "20 лет")]
+        [TestCase(21, "21 год")][TestCase(22, "22 года")][TestCase(23, "23 года")]
+        [TestCase(24, "24 года")][TestCase(25, "25 лет")][TestCase(30, "30 лет")]
+        [TestCase(33, "33 года")][TestCase(35, "35 лет")][TestCase(49, "49 лет")]
+        [TestCase(50, "юбилей: 50 лет")][TestCase(51, "51 год")][TestCase(55, "юбилей: 55 лет")]
+        [TestCase(80, "юбилей: 80 лет")][TestCase(81, "81 год")][TestCase(100, "юбилей: 100 лет")]
+        [TestCase(101, "101 год")][TestCase(102, "102 года")][TestCase(103, "103 года")]
+        [TestCase(105, "юбилей: 105 лет")][TestCase(205, "юбилей: 205 лет")][TestCase(301, "301 год")]
+        public void GetAge_SomeYears_ReturnsText(int year, string exp)
         {
-            app.YearNow = int.Parse(year) * 2;
-            string res = app.GetAge(year);
+            app.YearNow = year * 2;
+            Person p = new("");
+            string res = p.GetAge(year);
             Assert.AreEqual(exp, res);
         }
 
 
-        [TestCase("Ivan", "01.01.1990", "1;;IVAN;;01.01.1990;\n")]
-        public void AddText_NoDataOneValidInput_ReturnsText(string name, string birthday, string exp)
+        [TestCase("Ivan", "01.01.1990")]
+        public void AddPerson_NoDataOneValidInput_ReturnsText(string name, string birthday)
         {
-            List<string> lines = new();
-            string res = app.AddText(lines, name, birthday);
-            Assert.AreEqual(exp, res);
+            List<Person> people = new();
+            List<Person> exp = new();
+            Person p = new("IVAN")
+            {
+                Birthday = 01,
+                Birthmonth = 01,
+                Birthyear = 1990,
+                number = 1
+            };
+            exp.Add(p);
+            List<Person> res = app.AddPerson(people, name, birthday);
+            Assert.AreEqual(exp[0].Birthday, res[0].Birthday);
+            Assert.AreEqual(exp[0].Birthmonth, res[0].Birthmonth);
+            Assert.AreEqual(exp[0].Birthyear, res[0].Birthyear);
+            Assert.AreEqual(exp[0].Name, res[0].Name);
         }
 
 
-        [TestCase("Ivan", "01.01.1990", "1;;IVAN;;01.01.1990;\n")]
-        public void AddText_NullDataOneValidInput_ReturnsText(string name, string birthday, string exp)
+        [TestCase("Ivan", "01.01.1990")]
+        public void AddPerson_NullDataOneValidInput_ReturnsText(string name, string birthday)
         {
-            List<string> lines = null;
-            string res = app.AddText(lines, name, birthday);
-            Assert.AreEqual(exp, res);
+            List<Person> people = null;
+            List<Person> exp = new();
+            Person p = new("IVAN")
+            {
+                Birthday = 01,
+                Birthmonth = 01,
+                Birthyear = 1990,
+                number = 1
+            };
+            exp.Add(p);
+            List<Person> res = app.AddPerson(people, name, birthday);
+            Assert.AreEqual(exp[0].Birthday, res[0].Birthday);
+            Assert.AreEqual(exp[0].Birthmonth, res[0].Birthmonth);
+            Assert.AreEqual(exp[0].Birthyear, res[0].Birthyear);
+            Assert.AreEqual(exp[0].Name, res[0].Name);
         }
 
 
-        [TestCase("Ivan", "01.01.1990", "3;;IVAN;;01.01.1990;\n")]
-        public void AddText_SomeDataOneValidInput_ReturnsText(string name, string birthday, string exp)
+        [TestCase("Ivan", "01.01.1990")]
+        public void AddPerson_SomeDataOneValidInput_ReturnsText(string name, string birthday)
         {
-            List<string> lines = new() { "1;;Boris;;01.01.1990;\n", "2;;Vlad;;01.02.1980;\n" };
-            string res = app.AddText(lines, name, birthday);
-            Assert.AreEqual(exp, res);
+            List<Person> people = new()
+            {
+                new Person("Boris")
+                {
+                    Birthday = 01,
+                    Birthmonth = 01,
+                    Birthyear = 1990,
+                    number = 1
+                },
+                new Person("Vlad")
+                {
+                    Birthday = 01,
+                    Birthmonth = 02,
+                    Birthyear = 1980,
+                    number = 2
+                }
+            };
+            List<Person> exp = new()
+            {
+                new Person("Boris")
+                {
+                    Birthday = 01,
+                    Birthmonth = 01,
+                    Birthyear = 1990,
+                    number = 1
+                },
+                new Person("Vlad")
+                {
+                    Birthday = 01,
+                    Birthmonth = 02,
+                    Birthyear = 1980,
+                    number = 2
+                },
+                new Person("IVAN")
+                {
+                    Birthday = 01,
+                    Birthmonth = 01,
+                    Birthyear = 1990,
+                    number = 3
+                }
+            };
+            List<Person> res = app.AddPerson(people, name, birthday);
+            Assert.AreEqual(exp[0].Birthday, res[0].Birthday);
+            Assert.AreEqual(exp[0].Birthmonth, res[0].Birthmonth);
+            Assert.AreEqual(exp[0].Birthyear, res[0].Birthyear);
+            Assert.AreEqual(exp[0].Name, res[0].Name);
+            Assert.AreEqual(exp[1].Birthday, res[1].Birthday);
+            Assert.AreEqual(exp[1].Birthmonth, res[1].Birthmonth);
+            Assert.AreEqual(exp[1].Birthyear, res[1].Birthyear);
+            Assert.AreEqual(exp[1].Name, res[1].Name);
+            Assert.AreEqual(exp[2].Birthday, res[2].Birthday);
+            Assert.AreEqual(exp[2].Birthmonth, res[2].Birthmonth);
+            Assert.AreEqual(exp[2].Birthyear, res[2].Birthyear);
+            Assert.AreEqual(exp[2].Name, res[2].Name);
         }
 
 
         [TestCase("", "01.01.1990")]
-        public void AddText_BadNameInput_ThrowsException(string name, string birthday)
+        public void AddPerson_BadNameInput_ThrowsException(string name, string birthday)
         {
-            List<string> lines = new();
-            Exception ex = Assert.Catch(() => app.AddText(lines, name, birthday));
+            List<Person> people = new();
+            Exception ex = Assert.Catch(() => app.AddPerson(people, name, birthday));
             StringAssert.Contains("Введены некорректные данные\nВведите корректные ФИО (например Иванов Иван Иванович)", ex.Message);
         }
 
@@ -429,10 +522,10 @@ namespace happyBirthdayUnitTests
         [TestCase("Ivan", "01.f.1990")][TestCase("Ivan", "01..1990")][TestCase("Ivan", "01.01.")]
         [TestCase("Ivan", "")][TestCase("Ivan", "01011990")][TestCase("Ivan", "01,01,1990")]
         [TestCase("Ivan", "1.1.1990")][TestCase("Ivan", "f")][TestCase("Ivan","..")]
-        public void AddText_BadBirthdayInputs_ThrowsException(string name, string birthday)
+        public void AddPerson_BadBirthdayInputs_ThrowsException(string name, string birthday)
         {
-            List<string> lines = new();
-            Exception ex = Assert.Catch(() => app.AddText(lines, name, birthday));
+            List<Person> people = new();
+            Exception ex = Assert.Catch(() => app.AddPerson(people, name, birthday));
             StringAssert.Contains("Введены некорректные данные\nВведите корректную дату рождения (например 02.08.1999)", ex.Message);
         }
 
