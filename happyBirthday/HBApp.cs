@@ -14,22 +14,16 @@ namespace happyBirthday
 
     public class HBApp
     {
-        private List<string> lines;
-        private List<Dictionary<string, string>> people = new();
+        private List<Person> persons = new();
         private string text;
 
-        public string DayNow { get; set; } = DateTime.Now.Day.ToString().Length == 2
-                    ? DateTime.Now.Day.ToString()
-                    : "0" + DateTime.Now.Day.ToString();
-        public string MonthNow { get; set; } = DateTime.Now.Month.ToString().Length == 2
-            ? DateTime.Now.Month.ToString()
-            : "0" + DateTime.Now.Month.ToString();
+        public int DayNow { get; set; } = DateTime.Now.Day;
+
+        public int MonthNow { get; set; } = DateTime.Now.Month;
 
         public int YearNow { get; set; } = DateTime.Now.Year;
 
-        public List<string> Lines { get => lines; set => lines = value; }
-
-        public List<Dictionary<string, string>> People { get => people; set => people = value; }
+        public List<Person> Persons { get => persons; set => persons = value; }
 
         public string Text { get => text; set => text = value; }
 
@@ -40,13 +34,16 @@ namespace happyBirthday
         public static string GetTextFromUser() => Console.ReadLine();
 
 
+        public void WriteFile(string path, string txt) => System.IO.File.WriteAllText(path, txt);
+
+
         public List<string> ReadFile(string path)
         {
             try
             {
-                List<string> res = new();
-                res.AddRange(System.IO.File.ReadAllLines(path));
-                return res;
+                List<string> lines = new();
+                lines.AddRange(System.IO.File.ReadAllLines(path));
+                return lines;
             }
             catch (System.IO.FileNotFoundException ex)
             {
@@ -56,16 +53,13 @@ namespace happyBirthday
         }
 
 
-        public void WriteFile(string path, string txt) => System.IO.File.AppendAllText(path, txt);
-
-
-        public List<Dictionary<string, string>> GetPeopleList(List<string> lines, TimeMode tm = TimeMode.today)
+        public List<Person> GetPeopleList(List<string> lines)
         {
             if (lines == null || lines.Count == 0)
             {
                 throw new FormatException("Ошибка: отсутсвуют данные");
             }
-            List<Dictionary<string, string>> people = new();
+            List<Person> persons = new();
             foreach (string line in lines)
             {
                 try
@@ -95,45 +89,12 @@ namespace happyBirthday
                     {
                         throw new FormatException($"Неправильный формат года в строке {lines.IndexOf(line) + 1}");
                     }
-                    switch (tm)
-                    {
-                        case TimeMode.today:
-                            if (month == MonthNow && day == DayNow)
-                            {
-                                Dictionary<string, string> manD = new()
-                                {
-                                    ["name"] = name,
-                                    ["day"] = day,
-                                    ["month"] = month,
-                                    ["year"] = year
-                                };
-                                people.Add(manD);
-                            }
-                            break;
-                        case TimeMode.thisMonth:
-                            if (month == MonthNow)
-                            {
-                                Dictionary<string, string> manM = new()
-                                {
-                                    ["name"] = name,
-                                    ["day"] = day,
-                                    ["month"] = month,
-                                    ["year"] = year
-                                };
-                                people.Add(manM);
-                            }
-                            break;
-                        case TimeMode.thisYear:
-                            Dictionary<string, string> manY = new()
-                            {
-                                ["name"] = name,
-                                ["day"] = day,
-                                ["month"] = month,
-                                ["year"] = year
-                            };
-                            people.Add(manY);
-                            break;
-                    }
+                    Person p = new(name);
+                    p.Birthday = int.Parse(day);
+                    p.Birthmonth = int.Parse(month);
+                    p.Birthyear = int.Parse(year);
+                    p.number = int.Parse(values[0]??"0");
+                    persons.Add(p);
                 }
                 catch (FormatException ex)
                 {
@@ -141,36 +102,63 @@ namespace happyBirthday
                     throw badFormat;
                 }
             }
-            return people;
+            return persons;
         }
 
 
-        public string GetText(List<Dictionary<string, string>> people, TimeMode tm = TimeMode.today)
+        public List<Person> PeopleListFilter(List<Person> persons, TimeMode tm = TimeMode.today)
         {
-            StringBuilder text = new();
-            if (people.Count > 1)
+            List<Person> filteredList = new();
+            foreach (Person pers in persons)
             {
                 switch (tm)
                 {
                     case TimeMode.today:
-                        text.Append($"Сегодня {DayNow}.{MonthNow} отмечают день рождения:\n\n");
-                        foreach (Dictionary<string, string> man in people)
+                        if (pers.Birthmonth == MonthNow && pers.Birthday == DayNow)
                         {
-                            text.Append($"\t{man["name"]} ({ GetAge(man["year"])})\n");
+                            filteredList.Add(pers);
+                        }
+                        break;
+                    case TimeMode.thisMonth:
+                        if (pers.Birthmonth == MonthNow)
+                        {
+                            filteredList.Add(pers);
+                        }
+                        break;
+                    case TimeMode.thisYear:
+                        return persons;
+                }
+            }
+            return filteredList;
+        }
+
+
+        public string GetText(List<Person> persons, TimeMode tm = TimeMode.today)
+        {
+            StringBuilder text = new();
+            if (persons.Count > 1)
+            {
+                switch (tm)
+                {
+                    case TimeMode.today:
+                        text.Append($"Сегодня {ToString(DayNow)}.{ToString(MonthNow)} отмечают день рождения:\n\n");
+                        foreach (Person p in persons)
+                        {
+                            text.Append($"\t{p.Name} ({p.GetAge(YearNow)})\n");
                         }
                         break;
                     case TimeMode.thisMonth:
                         text.Append($"В этом месяце отмечают день рождения:\n\n");
-                        foreach (Dictionary<string, string> man in people)
+                        foreach (Person p in persons)
                         {
-                            text.Append($"\t{man["name"]} ({man["day"]}.{man["month"]})\n");
+                            text.Append($"\t{p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)})\n");
                         }
                         break;
                     case TimeMode.thisYear:
                         text.Append($"В этом году отмечают день рождения:\n\n");
-                        foreach (Dictionary<string, string> man in people)
+                        foreach (Person p in persons)
                         {
-                            text.Append($"\t{man["name"]} ({man["day"]}.{man["month"]})\n");
+                            text.Append($"\t{p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)})\n");
                         }
                         break;
                 }
@@ -180,18 +168,18 @@ namespace happyBirthday
                 switch (tm)
                 {
                     case TimeMode.today:
-                        text.Append(people.Count == 1
-                            ? $"Сегодня {DayNow}.{MonthNow} отмечает день рождения\n\n\t{ people[0]["name"]} ({GetAge(people[0]["year"])})\n"
-                            : $"Сегодня {DayNow}.{MonthNow} никто не отмечает день рождения");
+                        text.Append(persons.Count == 1
+                            ? $"Сегодня {ToString(DayNow)}.{ToString(MonthNow)} отмечает день рождения\n\n\t{ persons[0].Name} ({persons[0].GetAge(YearNow)})\n"
+                            : $"Сегодня {ToString(DayNow)}.{ToString(MonthNow)} никто не отмечает день рождения");
                         break;
                     case TimeMode.thisMonth:
-                        text.Append(people.Count == 1
-                            ? $"В этом месяце отмечает день рождения\n\n\t{people[0]["name"]} ({people[0]["day"]}.{people[0]["month"]})\n"
+                        text.Append(persons.Count == 1
+                            ? $"В этом месяце отмечает день рождения\n\n\t{persons[0].Name} ({ToString(persons[0].Birthday)}.{ToString(persons[0].Birthmonth)})\n"
                             : $"В этом месяце никто не отмечает день рождения");
                         break;
                     case TimeMode.thisYear:
-                        text.Append(people.Count == 1
-                            ? $"В этом году отмечает день рождения\n\n\t{people[0]["name"]} ({people[0]["day"]}.{people[0]["month"]})\n"
+                        text.Append(persons.Count == 1
+                            ? $"В этом году отмечает день рождения\n\n\t{persons[0].Name} ({ToString(persons[0].Birthday)}.{ToString(persons[0].Birthmonth)})\n"
                             : $"В этом году никто не отмечает день рождения");
                         break;
                 }
@@ -200,41 +188,16 @@ namespace happyBirthday
         }
 
 
-        public string GetAge(string year)
+        public List<Person> AddPerson(List<Person> persons, string name, string birthday)
         {
-            int age = YearNow - int.Parse(year);
-            string str = age.ToString();
-            if (age % 5 == 0 && age >= 50)
+            if (persons == null)
             {
-                str = "юбилей: " + str;
+                persons = new();
             }
-            if ((str.EndsWith('2') || str.EndsWith('3') || str.EndsWith('4')) && (!str.StartsWith('1')
-                || str.Length == 3))
+            int num = 1;
+            if (persons.Count != 0)
             {
-                str += " года";
-            }
-            else if (str.EndsWith('1') && (!str.StartsWith('1') || str.Length == 1 || str.Length == 3))
-            {
-                str += " год";
-            }
-            else
-            {
-                str += " лет";
-            }
-            return str;
-        }
-
-
-        public string AddText(List<string> lines, string name, string birthday)
-        {
-            if (lines == null)
-            {
-                lines = new();
-            }
-            string num = "1";
-            if (lines.Count != 0)
-            {
-                num = (int.Parse(lines[lines.Count - 1].Split(";")[0]) + 1).ToString();
+                num = persons.Count + 1;
             }
             try
             {
@@ -252,21 +215,26 @@ namespace happyBirthday
                 FormatException badInput = new("Введены некорректные данные\n" + ex.Message);
                 throw badInput;
             }
-            string result = $"{num};;{name.ToUpper()};;{birthday};\n";
-            return result;
+            Person p = new(name.ToUpper());
+            p.Birthday = int.Parse(birthday.Substring(0, 2));
+            p.Birthmonth = int.Parse(birthday.Substring(3, 2));
+            p.Birthyear = int.Parse(birthday.Substring(6, 4));
+            p.number = num;
+            persons.Add(p);
+            return persons;
         }
 
 
-        public string AddText(List<string> lines)
+        public List<Person> AddPerson(List<Person> persons)
         {
-            if (lines == null)
+            if (persons == null)
             {
-                lines = new();
+                persons = new();
             }
-            string num = "1";
-            if (lines.Count != 0)
+            int num = 1;
+            if (persons.Count != 0)
             {
-                num = (int.Parse(lines[lines.Count - 1].Split(";")[0]) + 1).ToString();
+                num = persons.Count + 1;
             }
             ShowText("Введите ФИО");
             string name = GetTextFromUser();
@@ -296,7 +264,23 @@ namespace happyBirthday
                     break;
                 }
             }
-            string result = $"{num};;{name.ToUpper()};;{birthday};\n";
+            Person p = new(name.ToUpper());
+            p.Birthday = int.Parse(birthday.Substring(0,2));
+            p.Birthmonth = int.Parse(birthday.Substring(3, 2));
+            p.Birthyear = int.Parse(birthday.Substring(6, 4));
+            p.number = num;
+            persons.Add(p);
+            return persons;
+        }
+
+
+        public string AddText(List<Person> persons)
+        {
+            string result = "";
+            foreach (Person p in persons)
+            {
+                result += $"{p.number};;{p.Name};;{ToString(p.Birthday)}.{ToString(p.Birthmonth)}.{p.Birthyear};\n";
+            }
             return result;
         }
 
@@ -328,6 +312,14 @@ namespace happyBirthday
                 }
             }
             return true;
+        }
+
+
+        public string ToString(int num)
+        {
+            return num.ToString().Length >= 2
+                ? num.ToString()
+                : "0" + num.ToString();
         }
     }
 }
