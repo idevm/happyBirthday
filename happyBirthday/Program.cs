@@ -2,28 +2,26 @@
 
 namespace happyBirthday
 {
-    class Program
+    internal class Program
     {
         private static void Main()
         {
             HBApp app = new();
             try
             {
-                app.Lines = app.ReadFile("db.csv");
+                app.Persons = app.GetPeopleList(app.ReadFile("db.csv"));
                 //today
-                app.People = app.GetPeopleList(app.Lines);
-                app.Text = app.GetText(app.People);
+                app.Text = app.GetText(app.PeopleListFilter(app.Persons));
                 app.ShowText(app.Text);
                 //thisMonth
-                app.People = app.GetPeopleList(app.Lines, TimeMode.thisMonth);
-                app.Text = app.GetText(app.People, TimeMode.thisMonth);
+                app.Text = app.GetText(app.PeopleListFilter(app.Persons, TimeMode.thisMonth), TimeMode.thisMonth);
                 app.ShowText(app.Text);
                 //thisYear
-                app.People = app.GetPeopleList(app.Lines, TimeMode.thisYear);
-                app.Text = app.GetText(app.People, TimeMode.thisYear);
+                app.Text = app.GetText(app.PeopleListFilter(app.Persons, TimeMode.thisYear), TimeMode.thisYear);
                 app.ShowText(app.Text);
                 //createNewBirthDay
-                //app.WriteFile("db.csv", app.AddText(app.Lines));
+                app.Persons = app.AddPerson(app.Persons);
+                app.WriteFile("db.csv", app.AddText(app.Persons));
             }
             catch (System.IO.FileNotFoundException ex)
             {
