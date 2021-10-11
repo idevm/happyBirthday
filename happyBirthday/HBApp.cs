@@ -277,6 +277,7 @@ namespace happyBirthday
         public string AddText(List<Person> persons)
         {
             string result = "";
+            persons.Sort();
             foreach (Person p in persons)
             {
                 result += $"{p.number};;{p.Name};;{ToString(p.Birthday)}.{ToString(p.Birthmonth)}.{p.Birthyear};\n";

@@ -1,7 +1,7 @@
 ﻿using System;
 namespace happyBirthday
 {
-    public class Person
+    public class Person: IComparable
     {
         public Person(string name)
         {
@@ -46,6 +46,42 @@ namespace happyBirthday
                 str += " лет";
             }
             return str;
+        }
+
+
+        public int CompareTo(object obj)
+        {
+            Person temp = obj as Person;
+            if (temp!=null)
+            {
+                if (this.Birthmonth > temp.Birthmonth)
+                {
+                    return 1;
+                }
+                else if (this.Birthmonth<temp.Birthmonth)
+                {
+                    return -1;
+                }
+                else
+                {
+                    if (this.Birthday > temp.Birthday)
+                    {
+                        return 1;
+                    }
+                    else if (this.Birthday < temp.Birthday)
+                    {
+                        return -1;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+            }
+            else
+            {
+                throw new ArgumentException("параметр не является Person");
+            }
         }
     }
 }
