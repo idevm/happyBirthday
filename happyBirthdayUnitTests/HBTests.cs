@@ -407,7 +407,7 @@ namespace happyBirthdayUnitTests
 
 
         [TestCase("Ivan", "01.01.1990")]
-        public void AddPerson_NoDataOneValidInput_ReturnsText(string name, string birthday)
+        public void AddPerson_NoDataOneValidInput_ReturnsList(string name, string birthday)
         {
             List<Person> people = new();
             List<Person> exp = new();
@@ -428,7 +428,7 @@ namespace happyBirthdayUnitTests
 
 
         [TestCase("Ivan", "01.01.1990")]
-        public void AddPerson_NullDataOneValidInput_ReturnsText(string name, string birthday)
+        public void AddPerson_NullDataOneValidInput_ReturnsList(string name, string birthday)
         {
             List<Person> people = null;
             List<Person> exp = new();
@@ -449,7 +449,7 @@ namespace happyBirthdayUnitTests
 
 
         [TestCase("Ivan", "01.01.1990")]
-        public void AddPerson_SomeDataOneValidInput_ReturnsText(string name, string birthday)
+        public void AddPerson_SomeDataOneValidInput_ReturnsList(string name, string birthday)
         {
             List<Person> people = new()
             {
@@ -527,6 +527,107 @@ namespace happyBirthdayUnitTests
             List<Person> people = new();
             Exception ex = Assert.Catch(() => app.AddPerson(people, name, birthday));
             StringAssert.Contains("Введены некорректные данные\nВведите корректную дату рождения (например 02.08.1999)", ex.Message);
+        }
+
+
+        [TestCase("IVAN")]
+        public void RemovePerson_SomeDataOneValidInput_ReturnsList(string name)
+        {
+            List<Person> people = new()
+            {
+                new Person("Boris")
+                {
+                    Birthday = 01,
+                    Birthmonth = 01,
+                    Birthyear = 1990,
+                    number = 1
+                },
+                new Person("Vlad")
+                {
+                    Birthday = 01,
+                    Birthmonth = 02,
+                    Birthyear = 1980,
+                    number = 2
+                },
+                new Person("IVAN")
+                {
+                    Birthday = 01,
+                    Birthmonth = 01,
+                    Birthyear = 1990,
+                    number = 3
+                }
+            };
+            List<Person> exp = new()
+            {
+                new Person("Boris")
+                {
+                    Birthday = 01,
+                    Birthmonth = 01,
+                    Birthyear = 1990,
+                    number = 1
+                },
+                new Person("Vlad")
+                {
+                    Birthday = 01,
+                    Birthmonth = 02,
+                    Birthyear = 1980,
+                    number = 2
+                }
+            };
+            people = app.RemovePerson(people, name);
+            bool res = people.Exists(x => x.Name == "IVAN");
+            Assert.False(res);
+        }
+
+
+        [Test]
+        public void UpdateText_UnsortedList_ReturnsText()
+        {
+            List<Person> people = new()
+            {
+                new Person("BORIS")
+                {
+                    Birthday = 31,
+                    Birthmonth = 12,
+                    Birthyear = 1990,
+                    number = 1
+                },
+                new Person("VLAD")
+                {
+                    Birthday = 01,
+                    Birthmonth = 02,
+                    Birthyear = 1980,
+                    number = 2
+                },
+                new Person("IVAN")
+                {
+                    Birthday = 01,
+                    Birthmonth = 02,
+                    Birthyear = 1990,
+                    number = 3
+                }
+            };
+            string exp = $"1;;IVAN;;01.02.1990;\n2;;VLAD;;01.02.1980;\n3;;BORIS;;31.12.1990;\n";
+            string res = app.UpdateText(people);
+            Assert.AreEqual(exp, res);
+        }
+
+
+        [Test]
+        public void UpdateText_NullList_ReturnsText()
+        {
+            List<Person> people = null;
+            Exception ex = Assert.Catch(() => app.UpdateText(people));
+            StringAssert.Contains("Ошибка: отсутсвуют данные", ex.Message);
+        }
+
+
+        [Test]
+        public void UpdateText_NoDataList_ReturnsText()
+        {
+            List<Person> people = new();
+            Exception ex = Assert.Catch(() => app.UpdateText(people));
+            StringAssert.Contains("Ошибка: отсутсвуют данные", ex.Message);
         }
 
 
