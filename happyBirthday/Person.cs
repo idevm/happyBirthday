@@ -51,36 +51,35 @@ namespace happyBirthday
 
         public int CompareTo(object obj)
         {
-            Person temp = obj as Person;
-            if (temp!=null)
+            if (obj is Person temp)
             {
-                if (this.Birthmonth > temp.Birthmonth)
+                if (Birthmonth > temp.Birthmonth)
                 {
                     return 1;
                 }
-                else if (this.Birthmonth<temp.Birthmonth)
+                else if (Birthmonth < temp.Birthmonth)
                 {
                     return -1;
                 }
                 else
                 {
-                    if (this.Birthday > temp.Birthday)
+                    if (Birthday > temp.Birthday)
                     {
                         return 1;
                     }
-                    else if (this.Birthday < temp.Birthday)
+                    else if (Birthday < temp.Birthday)
                     {
                         return -1;
                     }
                     else
                     {
-                        return 0;
+                        return Name.CompareTo(temp.Name);
                     }
                 }
             }
             else
             {
-                throw new ArgumentException("параметр не является Person");
+                throw new ArgumentException("Параметр не является объектом Person");
             }
         }
     }
