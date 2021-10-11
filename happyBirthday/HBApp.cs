@@ -274,15 +274,80 @@ namespace happyBirthday
         }
 
 
-        public string AddText(List<Person> persons)
+        public List<Person> RemovePerson(List<Person> persons, string name)
         {
-            string result = "";
-            persons.Sort();
+            if (persons == null || persons.Count == 0)
+            {
+                throw new FormatException("Ошибка: отсутсвуют данные");
+            }
+            List<Person> pList = persons.FindAll(x => x.Name == name);
+            if (pList.Count == 0)
+            {
+                return persons;
+            }
+            foreach (Person p in pList)
+            {
+                persons.Remove(p);
+            }
+            return persons;
+        }
+
+
+        public List<Person> RemovePerson(List<Person> persons)
+        {
+            ShowText("Введите ФИО для удаления");
+            string name = GetTextFromUser().ToUpper();
+            List<Person> pList = persons.FindAll(x => x.Name == name);
+            if (pList.Count == 0)
+            {
+                ShowText("Не райдено");
+                return persons;
+            }
+            foreach (Person p in pList)
+            {
+                ShowText($"Удалить {p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)}.{p.Birthyear})? [y/n]");
+                string answer = GetTextFromUser();
+                while (true)
+                {
+                    if (answer == "y")
+                    {
+                        persons.Remove(p);
+                        break;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+            return persons;
+        }
+
+
+        public string UpdateText(List<Person> persons)
+        {
+            if (persons == null || persons.Count == 0)
+            {
+                throw new FormatException("Ошибка: отсутсвуют данные");
+            }
+            StringBuilder text = new();
+            try
+            {
+                persons.Sort();
+            }
+            catch (ArgumentException)
+            {
+                throw;
+            }
+            for (int i = 0; i < persons.Count; i++)
+            {
+                persons[i].number = i+1;
+            }
             foreach (Person p in persons)
             {
-                result += $"{p.number};;{p.Name};;{ToString(p.Birthday)}.{ToString(p.Birthmonth)}.{p.Birthyear};\n";
+                text.Append($"{p.number};;{p.Name};;{ToString(p.Birthday)}.{ToString(p.Birthmonth)}.{p.Birthyear};\n");
             }
-            return result;
+            return text.ToString();
         }
 
 
