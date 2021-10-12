@@ -135,7 +135,7 @@ namespace happyBirthday
 
         public string GetText(List<Person> persons, TimeMode tm = TimeMode.today)
         {
-            StringBuilder text = new();
+            StringBuilder text = new("");
             if (persons.Count > 1)
             {
                 switch (tm)
@@ -270,6 +270,7 @@ namespace happyBirthday
             p.Birthyear = int.Parse(birthday.Substring(6, 4));
             p.number = num;
             persons.Add(p);
+            ShowText("Успешно добавлено");
             return persons;
         }
 
@@ -280,7 +281,7 @@ namespace happyBirthday
             {
                 throw new FormatException("Ошибка: отсутсвуют данные");
             }
-            List<Person> pList = persons.FindAll(x => x.Name == name);
+            List<Person> pList = persons.FindAll(x => x.Name.Contains(name));
             if (pList.Count == 0)
             {
                 return persons;
@@ -297,14 +298,16 @@ namespace happyBirthday
         {
             ShowText("Введите ФИО для удаления");
             string name = GetTextFromUser().ToUpper();
-            List<Person> pList = persons.FindAll(x => x.Name == name);
+            List<Person> pList = persons.FindAll(x => x.Name.Contains(name));
             if (pList.Count == 0)
             {
                 ShowText("Не райдено");
                 return persons;
             }
+            int ndx = 1;
             foreach (Person p in pList)
             {
+                ShowText($"Совпадение {ndx++} из {pList.Count}:");
                 ShowText($"Удалить {p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)}.{p.Birthyear})? [y/n]");
                 string answer = GetTextFromUser();
                 while (true)
@@ -312,6 +315,7 @@ namespace happyBirthday
                     if (answer == "y")
                     {
                         persons.Remove(p);
+                        ShowText("Успешно удалено");
                         break;
                     }
                     else
