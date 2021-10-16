@@ -1,7 +1,7 @@
 ﻿using System;
 namespace happyBirthday
 {
-    public class Person: IComparable
+    public class Person : IComparable
     {
         public Person(string name)
         {
@@ -32,12 +32,13 @@ namespace happyBirthday
             {
                 str = "юбилей: " + str;
             }
-            if ((str.EndsWith('2') || str.EndsWith('3') || str.EndsWith('4')) && (!str.StartsWith('1')
-                || str.Length == 3))
+            if ((str.EndsWith('2') || str.EndsWith('3') || str.EndsWith('4'))
+                && (!str.StartsWith('1') || str.Length == 3))
             {
                 str += " года";
             }
-            else if (str.EndsWith('1') && (!str.StartsWith('1') || str.Length == 1 || str.Length == 3))
+            else if (str.EndsWith('1')
+                && (!str.StartsWith('1') || str.Length == 1 || str.Length == 3))
             {
                 str += " год";
             }
@@ -79,7 +80,7 @@ namespace happyBirthday
             }
             else
             {
-                throw new ArgumentException("Параметр не является объектом Person");
+                throw new ArgumentException("Параметр не является Person");
             }
         }
     }
