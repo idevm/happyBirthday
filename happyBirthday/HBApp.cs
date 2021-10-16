@@ -4,11 +4,12 @@ using System.Text;
 
 namespace happyBirthday
 {
-    public enum TimeMode
+    public enum Mode
     {
         today,
         thisMonth,
-        thisYear
+        thisYear,
+        findResults
     }
 
 
