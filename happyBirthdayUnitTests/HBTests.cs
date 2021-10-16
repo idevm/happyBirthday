@@ -118,10 +118,10 @@ namespace happyBirthdayUnitTests
         }
 
 
-        [TestCase(TimeMode.today, 1)]
-        [TestCase(TimeMode.thisMonth, 2)]
-        [TestCase(TimeMode.thisYear, 3)]
-        public void PeopleListFilter_SomeTimeModes_ReturnsPeopleList(TimeMode tm, int CountOfCorrectLines)
+        [TestCase(Mode.today, 1)]
+        [TestCase(Mode.thisMonth, 2)]
+        [TestCase(Mode.thisYear, 3)]
+        public void PeopleListFilter_SomeTimeModes_ReturnsPeopleList(Mode tm, int CountOfCorrectLines)
         {
             app.DayNow = 1;
             app.MonthNow = 1;
@@ -241,7 +241,7 @@ namespace happyBirthdayUnitTests
         {
             List<Person> people = new();
             string exp = $"Сегодня {app.ToString(ThisDay)}.{app.ToString(ThisMonth)} никто не отмечает день рождения";
-            string res = app.GetText(people, TimeMode.today);
+            string res = app.GetText(people, Mode.today);
             Assert.AreEqual(exp, res);
         }
 
@@ -260,7 +260,7 @@ namespace happyBirthdayUnitTests
             };
             app.YearNow = 2020;
             string exp = $"Сегодня {app.ToString(ThisDay)}.{app.ToString(ThisMonth)} отмечает день рождения\n\n\tIvan (30 лет)\n";
-            string res = app.GetText(people, TimeMode.today);
+            string res = app.GetText(people, Mode.today);
             Assert.AreEqual(exp, res);
         }
 
@@ -285,7 +285,7 @@ namespace happyBirthdayUnitTests
             };
             app.YearNow = 2020;
             string exp = $"Сегодня {app.ToString(ThisDay)}.{app.ToString(ThisMonth)} отмечают день рождения:\n\n\tIvan (30 лет)\n\tIva (29 лет)\n";
-            string res = app.GetText(people, TimeMode.today);
+            string res = app.GetText(people, Mode.today);
             Assert.AreEqual(exp, res);
         }
 
@@ -295,7 +295,7 @@ namespace happyBirthdayUnitTests
         {
             List<Person> people = new();
             string exp = "В этом месяце никто не отмечает день рождения";
-            string res = app.GetText(people, TimeMode.thisMonth);
+            string res = app.GetText(people, Mode.thisMonth);
             Assert.AreEqual(exp, res);
         }
 
@@ -314,7 +314,7 @@ namespace happyBirthdayUnitTests
             };
             app.YearNow = 2020;
             string exp = $"В этом месяце отмечает день рождения\n\n\tIvan (31.{app.ToString(ThisMonth)})\n";
-            string res = app.GetText(people, TimeMode.thisMonth);
+            string res = app.GetText(people, Mode.thisMonth);
             Assert.AreEqual(exp, res);
         }
 
@@ -339,7 +339,7 @@ namespace happyBirthdayUnitTests
             };
             app.YearNow = 2020;
             string exp = $"В этом месяце отмечают день рождения:\n\n\tIvan (31.{app.ToString(ThisMonth)})\n\tIva (13.{app.ToString(ThisMonth)})\n";
-            string res = app.GetText(people, TimeMode.thisMonth);
+            string res = app.GetText(people, Mode.thisMonth);
             Assert.AreEqual(exp, res);
         }
 
@@ -349,7 +349,7 @@ namespace happyBirthdayUnitTests
         {
             List<Person> people = new();
             string exp = "В этом году никто не отмечает день рождения";
-            string res = app.GetText(people, TimeMode.thisYear);
+            string res = app.GetText(people, Mode.thisYear);
             Assert.AreEqual(exp, res);
         }
 
@@ -368,7 +368,7 @@ namespace happyBirthdayUnitTests
             };
             app.YearNow = 2020;
             string exp = $"В этом году отмечает день рождения\n\n\tIvan (31.01)\n";
-            string res = app.GetText(people, TimeMode.thisYear);
+            string res = app.GetText(people, Mode.thisYear);
             Assert.AreEqual(exp, res);
         }
 
@@ -393,7 +393,7 @@ namespace happyBirthdayUnitTests
             };
             app.YearNow = 2020;
             string exp = $"В этом году отмечают день рождения:\n\n\tIvan (01.01)\n\tIva (01.02)\n";
-            string res = app.GetText(people, TimeMode.thisYear);
+            string res = app.GetText(people, Mode.thisYear);
             Assert.AreEqual(exp, res);
         }
 
@@ -583,8 +583,40 @@ namespace happyBirthdayUnitTests
         }
 
 
-        [TestCase("IVAN")]
-        public void RemovePerson_SomeDataOneValidInput_ReturnsList(string name)
+        [Test]
+        public void RemovePerson_SomeDataNoValidInput_ReturnsList()
+        {
+            List<Person> people = new()
+            {
+                new Person("Boris")
+                {
+                    Birthday = 01,
+                    Birthmonth = 01,
+                    Birthyear = 1990,
+                    number = 1
+                }
+            };
+            Person pToRemove = null;
+            List<Person> exp = new()
+            {
+                new Person("Boris")
+                {
+                    Birthday = 01,
+                    Birthmonth = 01,
+                    Birthyear = 1990,
+                    number = 1
+                }
+            };
+            List<Person> res = app.RemovePerson(people, pToRemove);
+            Assert.AreEqual(exp[0].Birthday, res[0].Birthday);
+            Assert.AreEqual(exp[0].Birthmonth, res[0].Birthmonth);
+            Assert.AreEqual(exp[0].Birthyear, res[0].Birthyear);
+            Assert.AreEqual(exp[0].Name, res[0].Name);
+        }
+
+
+        [Test]
+        public void RemovePerson_SomeDataOneValidInput_ReturnsList()
         {
             List<Person> people = new()
             {
@@ -610,6 +642,7 @@ namespace happyBirthdayUnitTests
                     number = 3
                 }
             };
+            Person pToRemove = people[2];
             List<Person> exp = new()
             {
                 new Person("Boris")
@@ -627,9 +660,51 @@ namespace happyBirthdayUnitTests
                     number = 2
                 }
             };
-            people = app.RemovePerson(people, name);
+            people = app.RemovePerson(people, pToRemove);
             bool res = people.Exists(x => x.Name == "IVAN");
             Assert.False(res);
+        }
+
+
+        [Test]
+        public void FindPerson_SomeDataNoValidInput_ReturnsPerson()
+        {
+            List<Person> people = new()
+            {
+                new Person("Boris")
+                {
+                    Birthday = 01,
+                    Birthmonth = 01,
+                    Birthyear = 1990,
+                    number = 1
+                }
+            };
+            string name = "Boris";
+            List<Person> exp = new()
+            {
+                new Person("Boris")
+                {
+                    Birthday = 01,
+                    Birthmonth = 01,
+                    Birthyear = 1990,
+                    number = 1
+                }
+            };
+            List<Person> res = app.FindPerson(people, name);
+            Assert.AreEqual(exp[0].Birthday, res[0].Birthday);
+            Assert.AreEqual(exp[0].Birthmonth, res[0].Birthmonth);
+            Assert.AreEqual(exp[0].Birthyear, res[0].Birthyear);
+            Assert.AreEqual(exp[0].Name, res[0].Name);
+        }
+
+
+        [Test]
+        public void FindPerson_NoDataValidInput_ThrowsEx()
+        {
+            List<Person> people = new();
+            string name = "Boris";
+            Exception ex = Assert.Catch(() => app.FindPerson(people, name));
+            StringAssert.Contains("Ошибка: отсутсвуют данные", ex.Message);
         }
 
 
