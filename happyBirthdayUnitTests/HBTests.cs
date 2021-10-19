@@ -667,7 +667,7 @@ namespace happyBirthdayUnitTests
 
 
         [Test]
-        public void FindPerson_SomeDataNoValidInput_ReturnsPerson()
+        public void FindPersonByName_SomeDataValidInput_ReturnsPerson()
         {
             List<Person> people = new()
             {
@@ -690,7 +690,7 @@ namespace happyBirthdayUnitTests
                     number = 1
                 }
             };
-            List<Person> res = app.FindPerson(people, name);
+            List<Person> res = app.FindPersonByName(people, name);
             Assert.AreEqual(exp[0].Birthday, res[0].Birthday);
             Assert.AreEqual(exp[0].Birthmonth, res[0].Birthmonth);
             Assert.AreEqual(exp[0].Birthyear, res[0].Birthyear);
@@ -699,12 +699,76 @@ namespace happyBirthdayUnitTests
 
 
         [Test]
-        public void FindPerson_NoDataValidInput_ThrowsEx()
+        public void FindPersonByName_NoDataValidInput_ThrowsEx()
         {
             List<Person> people = new();
             string name = "Boris";
-            Exception ex = Assert.Catch(() => app.FindPerson(people, name));
+            Exception ex = Assert.Catch(() => app.FindPersonByName(people, name));
             StringAssert.Contains("Ошибка: отсутсвуют данные", ex.Message);
+        }
+
+
+        [Test]
+        public void FindPersonByDate_SomeDataNoValidInput_ReturnsPerson()
+        {
+            List<Person> people = new()
+            {
+                new Person("Boris")
+                {
+                    Birthday = 01,
+                    Birthmonth = 01,
+                    Birthyear = 1990,
+                    number = 1
+                }
+            };
+            List<Person> exp = new()
+            {
+                new Person("Boris")
+                {
+                    Birthday = 01,
+                    Birthmonth = 01,
+                    Birthyear = 1990,
+                    number = 1
+                }
+            };
+            List<Person> res = app.FindPersonByDate(people, 01);
+            Assert.AreEqual(exp[0].Birthday, res[0].Birthday);
+            Assert.AreEqual(exp[0].Birthmonth, res[0].Birthmonth);
+            Assert.AreEqual(exp[0].Birthyear, res[0].Birthyear);
+            Assert.AreEqual(exp[0].Name, res[0].Name);
+        }
+
+
+        [TestCase(1, -1, -1)]
+        [TestCase(1, 1, -1)]
+        [TestCase(1, 1, 1990)]
+        [TestCase(-1, 1, -1)]
+        [TestCase(-1, -1, 1990)]
+        [TestCase(1, -1, 1990)]
+        public void FindPersonByDate_SomeDataSomeArguments_ReturnsPerson(int d, int m, int y)
+        {
+            List<Person> people = new()
+            {
+                new Person("Boris")
+                {
+                    Birthday = 01,
+                    Birthmonth = 01,
+                    Birthyear = 1990,
+                    number = 1
+                }
+            };
+            List<Person> exp = new()
+            {
+                new Person("Boris")
+                {
+                    Birthday = 01,
+                    Birthmonth = 01,
+                    Birthyear = 1990,
+                    number = 1
+                }
+            };
+            List<Person> res = app.FindPersonByDate(people, d, m, y);
+            Assert.AreEqual(exp[0].Name, res[0].Name);
         }
 
 
