@@ -265,13 +265,33 @@ namespace happyBirthday
         }
 
 
-        public List<Person> FindPerson(List<Person> persons, string name)
+        public List<Person> FindPersonByName(List<Person> persons, string name)
         {
             if (persons == null || persons.Count == 0)
             {
                 throw new FormatException("Ошибка: отсутсвуют данные");
             }
             return persons.FindAll(x => x.Name.Contains(name));
+        }
+
+
+        public List<Person> FindPersonByDate(
+            List<Person> persons,
+            int day = -1,
+            int month = -1,
+            int year = -1)
+        {
+            if (persons == null || persons.Count == 0)
+            {
+                throw new FormatException("Ошибка: отсутсвуют данные");
+            }
+            return persons.FindAll(x =>
+            {
+                return (ToString(x.Birthday) == ToString(day) || day == -1)
+                && (ToString(x.Birthmonth) == ToString(month) || month == -1)
+                && (ToString(x.Birthyear) == ToString(year) || year == -1)
+                && day + month + year != -3;
+            });
         }
 
 
