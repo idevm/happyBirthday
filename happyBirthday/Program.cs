@@ -61,16 +61,52 @@ namespace happyBirthday
                     }
                     else if (answer == "f")
                     {
-                        Console.WriteLine("Введите ФИО для поиска");
-                        string name = Console.ReadLine().ToUpper();
-                        app.Text = app.GetText(app.FindPerson(app.Persons, name), Mode.findResults);
-                        Console.WriteLine(app.Text);
+                        while (true)
+                        {
+                            Console.WriteLine("Find by [n]ame or by [d]ate? Press [q] to quit. [enter]");
+                            string choose = Console.ReadLine();
+                            if (choose == "n")
+                            {
+                                Console.WriteLine("Введите ФИО для поиска");
+                                string name = Console.ReadLine().ToUpper();
+                                app.Text = app.GetText(app.FindPersonByName(app.Persons, name), Mode.findResults);
+                                Console.WriteLine(app.Text);
+                            }
+                            else if (choose == "d")
+                            {
+                                Console.WriteLine("Введите день");
+                                int day = -1;
+                                try
+                                {
+                                    day = int.Parse(Console.ReadLine());
+                                }
+                                catch (Exception)
+                                {
+                                }
+                                Console.WriteLine("Введите месяц (опционально)");
+                                int month = -1;
+                                try
+                                {
+                                    month = int.Parse(Console.ReadLine());
+                                }
+                                catch (Exception)
+                                {
+                                    //month = -1;
+                                }
+                                app.Text = app.GetText(app.FindPersonByDate(app.Persons, day, month), Mode.findResults);
+                                Console.WriteLine(app.Text);
+                            }
+                            else if (choose == "q")
+                            {
+                                break;
+                            }
+                        }
                     }
                     else if (answer == "r")
                     {
                         Console.WriteLine("Введите ФИО для удаления");
                         string name = Console.ReadLine().ToUpper();
-                        List<Person> found = app.FindPerson(app.Persons, name);
+                        List<Person> found = app.FindPersonByName(app.Persons, name);
                         if (found.Count == 0)
                         {
                             Console.WriteLine("Совпадений не найдено");
