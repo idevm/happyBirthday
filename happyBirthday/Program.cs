@@ -80,19 +80,14 @@ namespace happyBirthday
                                 {
                                     day = int.Parse(Console.ReadLine());
                                 }
-                                catch (Exception)
-                                {
-                                }
+                                catch (Exception) { }
                                 Console.WriteLine("Введите месяц (опционально)");
                                 int month = -1;
                                 try
                                 {
                                     month = int.Parse(Console.ReadLine());
                                 }
-                                catch (Exception)
-                                {
-                                    //month = -1;
-                                }
+                                catch (Exception) { }
                                 app.Text = app.GetText(app.FindPersonByDate(app.Persons, day, month), Mode.findResults);
                                 Console.WriteLine(app.Text);
                             }
