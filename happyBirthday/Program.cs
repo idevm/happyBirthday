@@ -18,7 +18,7 @@ namespace happyBirthday
                 app.Text = app.GetText(app.PeopleListFilter(app.Persons, Mode.thisMonth), Mode.thisMonth);
                 Console.WriteLine(app.Text);
                 //thisYear
-                app.Text = app.GetText(app.PeopleListFilter(app.Persons, Mode.thisYear), Mode.thisYear);
+                app.Text = app.GetText(app.PeopleListFilter(app.Persons, Mode.all), Mode.all);
                 Console.WriteLine(app.Text);
                 //create person or delete
                 while (true)
@@ -130,7 +130,7 @@ namespace happyBirthday
                     }
                     else if (answer == "s")
                     {
-                        app.Text = app.GetText(app.PeopleListFilter(app.Persons, Mode.thisYear), Mode.thisYear);
+                        app.Text = app.GetText(app.PeopleListFilter(app.Persons, Mode.all), Mode.all);
                         Console.WriteLine(app.Text);
                     }
                     else if (answer == "q")
