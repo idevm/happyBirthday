@@ -120,7 +120,7 @@ namespace happyBirthdayUnitTests
 
         [TestCase(Mode.today, 1)]
         [TestCase(Mode.thisMonth, 2)]
-        [TestCase(Mode.thisYear, 3)]
+        [TestCase(Mode.all, 3)]
         public void PeopleListFilter_SomeTimeModes_ReturnsPeopleList(Mode tm, int CountOfCorrectLines)
         {
             app.DayNow = 1;
@@ -349,7 +349,7 @@ namespace happyBirthdayUnitTests
         {
             List<Person> people = new();
             string exp = "В этом году никто не отмечает день рождения";
-            string res = app.GetText(people, Mode.thisYear);
+            string res = app.GetText(people, Mode.all);
             Assert.AreEqual(exp, res);
         }
 
@@ -368,7 +368,7 @@ namespace happyBirthdayUnitTests
             };
             app.YearNow = 2020;
             string exp = $"В этом году отмечает день рождения\n\n\tIvan (31.01)\n";
-            string res = app.GetText(people, Mode.thisYear);
+            string res = app.GetText(people, Mode.all);
             Assert.AreEqual(exp, res);
         }
 
@@ -393,7 +393,7 @@ namespace happyBirthdayUnitTests
             };
             app.YearNow = 2020;
             string exp = $"В этом году отмечают день рождения:\n\n\tIvan (01.01)\n\tIva (01.02)\n";
-            string res = app.GetText(people, Mode.thisYear);
+            string res = app.GetText(people, Mode.all);
             Assert.AreEqual(exp, res);
         }
 
