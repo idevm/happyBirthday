@@ -121,6 +121,8 @@ namespace happyBirthdayUnitTests
         [TestCase(Mode.today, 1)]
         [TestCase(Mode.thisMonth, 2)]
         [TestCase(Mode.all, 3)]
+        [TestCase(Mode.jan, 2)]
+        [TestCase(Mode.mar, 0)]
         public void PeopleListFilter_SomeTimeModes_ReturnsPeopleList(Mode tm, int CountOfCorrectLines)
         {
             app.DayNow = 1;
@@ -290,6 +292,32 @@ namespace happyBirthdayUnitTests
         }
 
 
+        [TestCase(Mode.jan, "В январе отмечает день рождения\n\n\tIvan (01.01)\n", 0)]
+        [TestCase(Mode.dec, "В декабре отмечает день рождения\n\n\tIva (01.12)\n", 1)]
+        public void GetText_MorePeopleSomeModes_ReturnsText(Mode tm, string exp, int ndx)
+        {
+            List<Person> ppl = new()
+            {
+                new Person("Ivan")
+                {
+                    Birthday = 1,
+                    Birthmonth = 1,
+                    Birthyear = 1990
+                },
+                new Person("Iva")
+                {
+                    Birthday = 1,
+                    Birthmonth = 12,
+                    Birthyear = 1991
+                }
+            };
+            List<Person> people = new() { ppl[ndx] };
+            string res = app.GetText(people, tm);
+            Assert.AreEqual(exp, res);
+        }
+
+
+
         [Test]
         public void GetText_NoPeopleThisMonth_ReturnsText()
         {
@@ -348,7 +376,7 @@ namespace happyBirthdayUnitTests
         public void GetText_NoPeopleThisYear_ReturnsText()
         {
             List<Person> people = new();
-            string exp = "В этом году никто не отмечает день рождения";
+            string exp = "Нет записей о днях рождения";
             string res = app.GetText(people, Mode.all);
             Assert.AreEqual(exp, res);
         }
@@ -367,7 +395,7 @@ namespace happyBirthdayUnitTests
                 }
             };
             app.YearNow = 2020;
-            string exp = $"В этом году отмечает день рождения\n\n\tIvan (31.01)\n";
+            string exp = $"Все дни рождения\n\n\tIvan (31.01.1990)\n";
             string res = app.GetText(people, Mode.all);
             Assert.AreEqual(exp, res);
         }
@@ -392,7 +420,7 @@ namespace happyBirthdayUnitTests
                 }
             };
             app.YearNow = 2020;
-            string exp = $"В этом году отмечают день рождения:\n\n\tIvan (01.01)\n\tIva (01.02)\n";
+            string exp = $"Все дни рождения:\n\n\tIvan (01.01.1990)\n\tIva (01.02.1991)\n";
             string res = app.GetText(people, Mode.all);
             Assert.AreEqual(exp, res);
         }
