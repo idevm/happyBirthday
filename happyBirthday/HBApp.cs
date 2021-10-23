@@ -8,7 +8,19 @@ namespace happyBirthday
     {
         today,
         thisMonth,
-        thisYear,
+        jan,
+        feb,
+        mar,
+        apr,
+        may,
+        jun,
+        jul,
+        aug,
+        sep,
+        oct,
+        nov,
+        dec,
+        all,
         findResults
     }
 
@@ -133,8 +145,46 @@ namespace happyBirthday
                             filteredList.Add(pers);
                         }
                         break;
-                    case Mode.thisYear:
+                    case Mode.all:
                         return persons;
+                    case Mode.jan:
+                        if (pers.Birthmonth == 1) filteredList.Add(pers);
+                        break;
+                    case Mode.feb:
+                        if (pers.Birthmonth == 2) filteredList.Add(pers);
+                        break;
+                    case Mode.mar:
+                        if (pers.Birthmonth == 3) filteredList.Add(pers);
+                        break;
+                    case Mode.apr:
+                        if (pers.Birthmonth == 4) filteredList.Add(pers);
+                        break;
+                    case Mode.may:
+                        if (pers.Birthmonth == 5) filteredList.Add(pers);
+                        break;
+                    case Mode.jun:
+                        if (pers.Birthmonth == 6) filteredList.Add(pers);
+                        break;
+                    case Mode.jul:
+                        if (pers.Birthmonth == 7) filteredList.Add(pers);
+                        break;
+                    case Mode.aug:
+                        if (pers.Birthmonth == 8) filteredList.Add(pers);
+                        break;
+                    case Mode.sep:
+                        if (pers.Birthmonth == 9) filteredList.Add(pers);
+                        break;
+                    case Mode.oct:
+                        if (pers.Birthmonth == 10) filteredList.Add(pers);
+                        break;
+                    case Mode.nov:
+                        if (pers.Birthmonth == 11) filteredList.Add(pers);
+                        break;
+                    case Mode.dec:
+                        if (pers.Birthmonth == 12) filteredList.Add(pers);
+                        break;
+                    case Mode.findResults:
+                        break;
                 }
             }
             return filteredList;
@@ -162,7 +212,7 @@ namespace happyBirthday
                             text.Append($"\t{p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)})\n");
                         }
                         break;
-                    case Mode.thisYear:
+                    case Mode.all:
                         text.Append($"В этом году отмечают день рождения:\n\n");
                         foreach (Person p in persons)
                         {
@@ -175,6 +225,35 @@ namespace happyBirthday
                         {
                             text.Append($"\t{p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)})\n");
                         }
+                        break;
+                    case Mode.jan:
+                        text.Append($"В январе отмечают день рождения:\n\n");
+                        foreach (Person p in persons)
+                        {
+                            text.Append($"\t{p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)})\n");
+                        }
+                        break;
+                    case Mode.feb:
+                        break;
+                    case Mode.mar:
+                        break;
+                    case Mode.apr:
+                        break;
+                    case Mode.may:
+                        break;
+                    case Mode.jun:
+                        break;
+                    case Mode.jul:
+                        break;
+                    case Mode.aug:
+                        break;
+                    case Mode.sep:
+                        break;
+                    case Mode.oct:
+                        break;
+                    case Mode.nov:
+                        break;
+                    case Mode.dec:
                         break;
                 }
             }
@@ -192,7 +271,7 @@ namespace happyBirthday
                             ? $"В этом месяце отмечает день рождения\n\n\t{persons[0].Name} ({ToString(persons[0].Birthday)}.{ToString(persons[0].Birthmonth)})\n"
                             : $"В этом месяце никто не отмечает день рождения");
                         break;
-                    case Mode.thisYear:
+                    case Mode.all:
                         text.Append(persons.Count == 1
                             ? $"В этом году отмечает день рождения\n\n\t{persons[0].Name} ({ToString(persons[0].Birthday)}.{ToString(persons[0].Birthmonth)})\n"
                             : $"В этом году никто не отмечает день рождения");
@@ -201,6 +280,33 @@ namespace happyBirthday
                         text.Append(persons.Count == 1
                             ? $"Результат поиска:\n\n\t{persons[0].Name} ({ToString(persons[0].Birthday)}.{ToString(persons[0].Birthmonth)})\n"
                             : $"Совпадений не найдено");
+                        break;
+                    case Mode.jan:
+                        text.Append(persons.Count == 1
+                            ? $"В январе отмечает день рождения\n\n\t{persons[0].Name} ({ToString(persons[0].Birthday)}.{ToString(persons[0].Birthmonth)})\n"
+                            : $"В январе никто не отмечает день рождения");
+                        break;
+                    case Mode.feb:
+                        break;
+                    case Mode.mar:
+                        break;
+                    case Mode.apr:
+                        break;
+                    case Mode.may:
+                        break;
+                    case Mode.jun:
+                        break;
+                    case Mode.jul:
+                        break;
+                    case Mode.aug:
+                        break;
+                    case Mode.sep:
+                        break;
+                    case Mode.oct:
+                        break;
+                    case Mode.nov:
+                        break;
+                    case Mode.dec:
                         break;
                 }
             }
