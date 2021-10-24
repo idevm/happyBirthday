@@ -20,7 +20,7 @@ namespace happyBirthday
                 //thisYear
                 app.Text = app.GetText(app.PeopleListFilter(app.Persons, Mode.all), Mode.all);
                 Console.WriteLine(app.Text);
-                //create person or delete
+                //menu
                 while (true)
                 {
                     Console.WriteLine($"\nHappyBirthdayApp\n[c]reate, [f]ind, [r]emove, [s]how or [q]uit? [enter]");
