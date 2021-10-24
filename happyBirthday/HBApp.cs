@@ -70,11 +70,11 @@ namespace happyBirthday
 
         public List<Person> GetPeopleList(List<string> lines)
         {
+            List<Person> persons = new();
             if (lines == null || lines.Count == 0)
             {
-                throw new FormatException("Ошибка: отсутсвуют данные");
+                return persons;
             }
-            List<Person> persons = new();
             foreach (string line in lines)
             {
                 try
@@ -411,7 +411,7 @@ namespace happyBirthday
             string name,
             string birthday)
         {
-            if (persons == null)
+            if (persons == null || persons.Count == 0)
             {
                 persons = new();
             }
@@ -452,7 +452,7 @@ namespace happyBirthday
         {
             if (persons == null || persons.Count == 0)
             {
-                throw new FormatException("Ошибка: отсутсвуют данные");
+                return persons;
             }
             if (personToRemove == null)
             {
@@ -467,7 +467,7 @@ namespace happyBirthday
         {
             if (persons == null || persons.Count == 0)
             {
-                throw new FormatException("Ошибка: отсутсвуют данные");
+                return persons;
             }
             return persons.FindAll(x => x.Name.Contains(name));
         }
@@ -481,7 +481,7 @@ namespace happyBirthday
         {
             if (persons == null || persons.Count == 0)
             {
-                throw new FormatException("Ошибка: отсутсвуют данные");
+                return persons;
             }
             return persons.FindAll(x =>
             {
@@ -495,11 +495,11 @@ namespace happyBirthday
 
         public string UpdateText(List<Person> persons)
         {
+            StringBuilder text = new("");
             if (persons == null || persons.Count == 0)
             {
-                throw new FormatException("Ошибка: отсутсвуют данные");
+                return text.ToString();
             }
-            StringBuilder text = new();
             try
             {
                 persons.Sort();
