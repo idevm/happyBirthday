@@ -118,6 +118,16 @@ namespace happyBirthdayUnitTests
         }
 
 
+        [Test]
+        public void PeopleListFilter_NoData_ReturnsEmptyPeopleList()
+        {
+            List<Person> people = new();
+            List<Person> exp = new();
+            List<Person> res = app.PeopleListFilter(people);
+            Assert.AreEqual(exp, res);
+        }
+
+
         [TestCase(Mode.today, 1)]
         [TestCase(Mode.thisMonth, 2)]
         [TestCase(Mode.all, 3)]
@@ -163,8 +173,9 @@ namespace happyBirthdayUnitTests
         public void GetPeopleList_NoData_ThrowsExceptiion()
         {
             List<string> lines = new();
-            Exception ex = Assert.Catch(() => app.GetPeopleList(lines));
-            StringAssert.Contains("Ошибка: отсутсвуют данные", ex.Message);
+            List<Person> exp = new();
+            List<Person> res = app.GetPeopleList(lines);
+            Assert.AreEqual(exp, res);
         }
 
 
@@ -172,8 +183,9 @@ namespace happyBirthdayUnitTests
         public void GetPeopleList_NullData_ThrowsExceptiion()
         {
             List<string> lines = null;
-            Exception ex = Assert.Catch(() => app.GetPeopleList(lines));
-            StringAssert.Contains("Ошибка: отсутсвуют данные", ex.Message);
+            List<Person> exp = new();
+            List<Person> res = app.GetPeopleList(lines);
+            Assert.AreEqual(exp, res);
         }
 
 
@@ -731,8 +743,9 @@ namespace happyBirthdayUnitTests
         {
             List<Person> people = new();
             string name = "Boris";
-            Exception ex = Assert.Catch(() => app.FindPersonByName(people, name));
-            StringAssert.Contains("Ошибка: отсутсвуют данные", ex.Message);
+            List<Person> exp = new();
+            List<Person> res = app.FindPersonByName(people, name);
+            Assert.AreEqual(exp, res);
         }
 
 
@@ -837,8 +850,8 @@ namespace happyBirthdayUnitTests
         public void UpdateText_NullList_ReturnsText()
         {
             List<Person> people = null;
-            Exception ex = Assert.Catch(() => app.UpdateText(people));
-            StringAssert.Contains("Ошибка: отсутсвуют данные", ex.Message);
+            string res = app.UpdateText(people);
+            StringAssert.AreEqualIgnoringCase("", res);
         }
 
 
@@ -846,8 +859,8 @@ namespace happyBirthdayUnitTests
         public void UpdateText_NoDataList_ReturnsText()
         {
             List<Person> people = new();
-            Exception ex = Assert.Catch(() => app.UpdateText(people));
-            StringAssert.Contains("Ошибка: отсутсвуют данные", ex.Message);
+            string res = app.UpdateText(people);
+            StringAssert.AreEqualIgnoringCase("", res);
         }
 
 
