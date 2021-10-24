@@ -61,6 +61,10 @@ namespace happyBirthday
                     "Не найден файл с данными, а именно: " + ex.Message);
                 throw noFile;
             }
+            finally
+            {
+                WriteFile("db.csv", "");
+            }
         }
 
 
