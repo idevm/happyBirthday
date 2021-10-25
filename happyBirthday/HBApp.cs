@@ -28,7 +28,6 @@ namespace happyBirthday
     public class HBApp
     {
         private List<Person> persons = new();
-        private string text;
 
         public int DayNow { get; set; } = DateTime.Now.Day;
 
@@ -37,8 +36,6 @@ namespace happyBirthday
         public int YearNow { get; set; } = DateTime.Now.Year;
 
         public List<Person> Persons { get => persons; set => persons = value; }
-
-        public string Text { get => text; set => text = value; }
 
 
         public void WriteFile(string path, string txt)
@@ -57,13 +54,9 @@ namespace happyBirthday
             }
             catch (System.IO.FileNotFoundException ex)
             {
-                System.IO.FileNotFoundException noFile = new(
-                    "Не найден файл с данными, а именно: " + ex.Message);
-                throw noFile;
-            }
-            finally
-            {
                 WriteFile("db.csv", "");
+                System.IO.FileNotFoundException noFile = new("Не найден файл с данными, а именно: " + ex.Message);
+                throw noFile;
             }
         }
 
@@ -84,36 +77,26 @@ namespace happyBirthday
                     {
                         throw new FormatException($"Неправильный формат таблицы: ошибка в строке  {lines.IndexOf(line) + 1}");
                     }
-                    string name = values[2];
-                    if (name.Length <= 0)
+                    if (values[2].Length == 0)
                     {
                         throw new FormatException($"Отсутствует имя в строке {lines.IndexOf(line) + 1}");
                     }
-                    string day = values[4].Split(".")[0];
-                    if (!int.TryParse(day, out int num)
-                        || day.Length != 2
-                        || num > 31)
+                    if (!ValidateDay(values[4].Split(".")[0]))
                     {
                         throw new FormatException($"Неправильный формат дня в строке {lines.IndexOf(line) + 1}");
                     }
-                    string month = values[4].Split(".")[1];
-                    if (!int.TryParse(month, out num)
-                        || month.Length != 2
-                        || num > 12)
+                    if (!ValidateMonth(values[4].Split(".")[1]))
                     {
                         throw new FormatException($"Неправильный формат месяца в строке {lines.IndexOf(line) + 1}");
                     }
-                    string year = values[4].Split(".")[2];
-                    if (!int.TryParse(year, out num)
-                        || year.Length != 4
-                        || num > YearNow)
+                    if (!ValidateYear(values[4].Split(".")[2]))
                     {
                         throw new FormatException($"Неправильный формат года в строке {lines.IndexOf(line) + 1}");
                     }
-                    Person p = new(name);
-                    p.Birthday = int.Parse(day);
-                    p.Birthmonth = int.Parse(month);
-                    p.Birthyear = int.Parse(year);
+                    Person p = new(values[2]);
+                    p.Birthday = int.Parse(values[4].Split(".")[0]);
+                    p.Birthmonth = int.Parse(values[4].Split(".")[1]);
+                    p.Birthyear = int.Parse(values[4].Split(".")[2]);
                     p.number = int.Parse(values[0] ?? "0");
                     persons.Add(p);
                 }
@@ -204,116 +187,84 @@ namespace happyBirthday
                 {
                     case Mode.today:
                         text.Append($"Сегодня {ToString(DayNow)}.{ToString(MonthNow)} отмечают день рождения:\n\n");
-                        foreach (Person p in persons)
-                        {
-                            text.Append($"\t{p.Name} ({p.GetAge(YearNow)})\n");
-                        }
                         break;
                     case Mode.thisMonth:
                         text.Append($"В этом месяце отмечают день рождения:\n\n");
-                        foreach (Person p in persons)
-                        {
-                            text.Append($"\t{p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)})\n");
-                        }
                         break;
                     case Mode.all:
                         text.Append($"Все дни рождения:\n\n");
-                        foreach (Person p in persons)
-                        {
-                            text.Append($"\t{p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)}.{ToString(p.Birthyear)})\n");
-                        }
                         break;
                     case Mode.findResults:
                         text.Append($"Результат поиска:\n\n");
-                        foreach (Person p in persons)
-                        {
-                            text.Append($"\t{p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)}.{ToString(p.Birthyear)})\n");
-                        }
                         break;
                     case Mode.jan:
                         text.Append($"В январе отмечают день рождения:\n\n");
-                        foreach (Person p in persons)
-                        {
-                            text.Append($"\t{p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)})\n");
-                        }
                         break;
                     case Mode.feb:
                         text.Append($"В феврале отмечают день рождения:\n\n");
-                        foreach (Person p in persons)
-                        {
-                            text.Append($"\t{p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)})\n");
-                        }
                         break;
                     case Mode.mar:
                         text.Append($"В марте отмечают день рождения:\n\n");
-                        foreach (Person p in persons)
-                        {
-                            text.Append($"\t{p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)})\n");
-                        }
                         break;
                     case Mode.apr:
                         text.Append($"В апреле отмечают день рождения:\n\n");
-                        foreach (Person p in persons)
-                        {
-                            text.Append($"\t{p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)})\n");
-                        }
                         break;
                     case Mode.may:
                         text.Append($"В мае отмечают день рождения:\n\n");
-                        foreach (Person p in persons)
-                        {
-                            text.Append($"\t{p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)})\n");
-                        }
                         break;
                     case Mode.jun:
                         text.Append($"В июне отмечают день рождения:\n\n");
-                        foreach (Person p in persons)
-                        {
-                            text.Append($"\t{p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)})\n");
-                        }
                         break;
                     case Mode.jul:
                         text.Append($"В июле отмечают день рождения:\n\n");
-                        foreach (Person p in persons)
-                        {
-                            text.Append($"\t{p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)})\n");
-                        }
                         break;
                     case Mode.aug:
                         text.Append($"В августе отмечают день рождения:\n\n");
-                        foreach (Person p in persons)
-                        {
-                            text.Append($"\t{p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)})\n");
-                        }
                         break;
                     case Mode.sep:
                         text.Append($"В сентябре отмечают день рождения:\n\n");
-                        foreach (Person p in persons)
-                        {
-                            text.Append($"\t{p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)})\n");
-                        }
                         break;
                     case Mode.oct:
                         text.Append($"В октябре отмечают день рождения:\n\n");
-                        foreach (Person p in persons)
-                        {
-                            text.Append($"\t{p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)})\n");
-                        }
                         break;
                     case Mode.nov:
                         text.Append($"В ноябре отмечают день рождения:\n\n");
-                        foreach (Person p in persons)
-                        {
-                            text.Append($"\t{p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)})\n");
-                        }
                         break;
                     case Mode.dec:
                         text.Append($"В декабре отмечают день рождения:\n\n");
-                        foreach (Person p in persons)
-                        {
-                            text.Append($"\t{p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)})\n");
-                        }
                         break;
+                }
+                foreach (Person p in persons)
+                {
+                    switch (tm)
+                    {
+                        case Mode.today:
+                            text.Append($"\t{p.Name} ({p.GetAge(YearNow)})\n");
+                            break;
+                        case Mode.thisMonth:
+                            text.Append($"\t{p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)})\n");
+                            break;
+                        case Mode.all:
+                            text.Append($"\t{p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)}.{ToString(p.Birthyear)})\n");
+                            break;
+                        case Mode.findResults:
+                            text.Append($"\t{p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)}.{ToString(p.Birthyear)})\n");
+                            break;
+                        case Mode.jan:
+                        case Mode.feb:
+                        case Mode.mar:
+                        case Mode.apr:
+                        case Mode.may:
+                        case Mode.jun:
+                        case Mode.jul:
+                        case Mode.aug:
+                        case Mode.sep:
+                        case Mode.oct:
+                        case Mode.nov:
+                        case Mode.dec:
+                            text.Append($"\t{p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)})\n");
+                            break;
+                    }
                 }
             }
             else
@@ -415,11 +366,6 @@ namespace happyBirthday
             {
                 persons = new();
             }
-            int num = 1;
-            if (persons.Count != 0)
-            {
-                num = persons.Count + 1;
-            }
             try
             {
                 if (!ValidInput(name: name))
@@ -440,7 +386,6 @@ namespace happyBirthday
             p.Birthday = int.Parse(birthday.Substring(0, 2));
             p.Birthmonth = int.Parse(birthday.Substring(3, 2));
             p.Birthyear = int.Parse(birthday.Substring(6, 4));
-            p.number = num;
             persons.Add(p);
             return persons;
         }
@@ -452,24 +397,19 @@ namespace happyBirthday
         {
             if (persons == null || persons.Count == 0)
             {
-                return persons;
+                return new();
             }
-            if (personToRemove == null)
+            if (personToRemove != null)
             {
-                return persons;
+                persons.Remove(personToRemove);
             }
-            persons.Remove(personToRemove);
             return persons;
         }
 
 
         public List<Person> FindPersonByName(List<Person> persons, string name)
         {
-            if (persons == null || persons.Count == 0)
-            {
-                return persons;
-            }
-            return persons.FindAll(x => x.Name.Contains(name));
+            return persons?.FindAll(x => x.Name.Contains(name)) ?? new();
         }
 
 
@@ -479,17 +419,13 @@ namespace happyBirthday
             int month = -1,
             int year = -1)
         {
-            if (persons == null || persons.Count == 0)
-            {
-                return persons;
-            }
-            return persons.FindAll(x =>
+            return persons?.FindAll(x =>
             {
                 return (ToString(x.Birthday) == ToString(day) || day == -1)
                 && (ToString(x.Birthmonth) == ToString(month) || month == -1)
                 && (ToString(x.Birthyear) == ToString(year) || year == -1)
                 && day + month + year != -3;
-            });
+            }) ?? new();
         }
 
 
@@ -530,7 +466,7 @@ namespace happyBirthday
             }
             if (name != "nameParam")
             {
-                if (name.Length < 1)
+                if (name.Length == 0)
                 {
                     return false;
                 }
@@ -541,21 +477,48 @@ namespace happyBirthday
                 {
                     return false;
                 }
-                string day = birthday.Split(".")[0];
-                string month = birthday.Split(".")[1];
-                string year = birthday.Split(".")[2];
-                if (!int.TryParse(day, out int d)
-                || day.Length != 2
-                || d > 31
-                || !int.TryParse(month, out int m)
-                || month.Length != 2
-                || m > 12
-                || !int.TryParse(year, out int y)
-                || year.Length != 4
-                || y > YearNow)
+                if (!ValidateDay(birthday.Split(".")[0])
+                    || !ValidateMonth(birthday.Split(".")[1])
+                    || !ValidateYear(birthday.Split(".")[2]))
                 {
                     return false;
                 }
+            }
+            return true;
+        }
+
+
+        public bool ValidateDay(string d)
+        {
+            if (!int.TryParse(d, out int intD)
+            || d.Length != 2
+            || intD > 31)
+            {
+                return false;
+            }
+            return true;
+        }
+
+
+        public bool ValidateMonth(string m)
+        {
+            if (!int.TryParse(m, out int intM)
+            || m.Length != 2
+            || intM > 12)
+            {
+                return false;
+            }
+            return true;
+        }
+
+
+        public bool ValidateYear(string y)
+        {
+            if (!int.TryParse(y, out int intY)
+            || y.Length != 4
+            || intY > YearNow)
+            {
+                return false;
             }
             return true;
         }
