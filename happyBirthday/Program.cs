@@ -12,14 +12,11 @@ namespace happyBirthday
             {
                 app.Persons = app.GetPeopleList(app.ReadFile("db.csv"));
                 //today
-                app.Text = app.GetText(app.PeopleListFilter(app.Persons));
-                Console.WriteLine(app.Text);
-                //thisMonth
-                app.Text = app.GetText(app.PeopleListFilter(app.Persons, Mode.thisMonth), Mode.thisMonth);
-                Console.WriteLine(app.Text);
-                //thisYear
-                app.Text = app.GetText(app.PeopleListFilter(app.Persons, Mode.all), Mode.all);
-                Console.WriteLine(app.Text);
+                Console.WriteLine(app.GetText(app.PeopleListFilter(app.Persons)));
+                //this month
+                Console.WriteLine(app.GetText(app.PeopleListFilter(app.Persons, Mode.thisMonth), Mode.thisMonth));
+                //all
+                Console.WriteLine(app.GetText(app.PeopleListFilter(app.Persons, Mode.all), Mode.all));
                 //menu
                 while (true)
                 {
@@ -69,8 +66,7 @@ namespace happyBirthday
                             {
                                 Console.WriteLine("Введите ФИО для поиска");
                                 string name = Console.ReadLine().ToUpper();
-                                app.Text = app.GetText(app.FindPersonByName(app.Persons, name), Mode.findResults);
-                                Console.WriteLine(app.Text);
+                                Console.WriteLine(app.GetText(app.FindPersonByName(app.Persons, name), Mode.findResults));
                             }
                             else if (choose == "d")
                             {
@@ -88,8 +84,7 @@ namespace happyBirthday
                                     month = int.Parse(Console.ReadLine());
                                 }
                                 catch (Exception) { }
-                                app.Text = app.GetText(app.FindPersonByDate(app.Persons, day, month), Mode.findResults);
-                                Console.WriteLine(app.Text);
+                                Console.WriteLine(app.GetText(app.FindPersonByDate(app.Persons, day, month), Mode.findResults));
                             }
                             else if (choose == "q")
                             {
@@ -136,8 +131,7 @@ namespace happyBirthday
                             string choose = Console.ReadLine();
                             if (choose == "t")
                             {
-                                app.Text = app.GetText(app.PeopleListFilter(app.Persons, Mode.today), Mode.today);
-                                Console.WriteLine(app.Text);
+                                Console.WriteLine(app.GetText(app.PeopleListFilter(app.Persons, Mode.today), Mode.today));
                             }
                             else if (choose == "m")
                             {
@@ -146,52 +140,40 @@ namespace happyBirthday
                                 switch (m)
                                 {
                                     case "1":
-                                        app.Text = app.GetText(app.PeopleListFilter(app.Persons, Mode.jan), Mode.jan);
-                                        Console.WriteLine(app.Text);
+                                        Console.WriteLine(app.GetText(app.PeopleListFilter(app.Persons, Mode.jan), Mode.jan));
                                         break;
                                     case "2":
-                                        app.Text = app.GetText(app.PeopleListFilter(app.Persons, Mode.feb), Mode.feb);
-                                        Console.WriteLine(app.Text);
+                                        Console.WriteLine(app.GetText(app.PeopleListFilter(app.Persons, Mode.feb), Mode.feb));
                                         break;
                                     case "3":
-                                        app.Text = app.GetText(app.PeopleListFilter(app.Persons, Mode.mar), Mode.mar);
-                                        Console.WriteLine(app.Text);
+                                        Console.WriteLine(app.GetText(app.PeopleListFilter(app.Persons, Mode.mar), Mode.mar));
                                         break;
                                     case "4":
-                                        app.Text = app.GetText(app.PeopleListFilter(app.Persons, Mode.apr), Mode.apr);
-                                        Console.WriteLine(app.Text);
+                                        Console.WriteLine(app.GetText(app.PeopleListFilter(app.Persons, Mode.apr), Mode.apr));
                                         break;
                                     case "5":
-                                        app.Text = app.GetText(app.PeopleListFilter(app.Persons, Mode.may), Mode.may);
-                                        Console.WriteLine(app.Text);
+                                        Console.WriteLine(app.GetText(app.PeopleListFilter(app.Persons, Mode.may), Mode.may));
                                         break;
                                     case "6":
-                                        app.Text = app.GetText(app.PeopleListFilter(app.Persons, Mode.jun), Mode.jun);
-                                        Console.WriteLine(app.Text);
+                                        Console.WriteLine(app.GetText(app.PeopleListFilter(app.Persons, Mode.jun), Mode.jun));
                                         break;
                                     case "7":
-                                        app.Text = app.GetText(app.PeopleListFilter(app.Persons, Mode.jul), Mode.jul);
-                                        Console.WriteLine(app.Text);
+                                        Console.WriteLine(app.GetText(app.PeopleListFilter(app.Persons, Mode.jul), Mode.jul));
                                         break;
                                     case "8":
-                                        app.Text = app.GetText(app.PeopleListFilter(app.Persons, Mode.aug), Mode.aug);
-                                        Console.WriteLine(app.Text);
+                                        Console.WriteLine(app.GetText(app.PeopleListFilter(app.Persons, Mode.aug), Mode.aug));
                                         break;
                                     case "9":
-                                        app.Text = app.GetText(app.PeopleListFilter(app.Persons, Mode.sep), Mode.sep);
-                                        Console.WriteLine(app.Text);
+                                        Console.WriteLine(app.GetText(app.PeopleListFilter(app.Persons, Mode.sep), Mode.sep));
                                         break;
                                     case "10":
-                                        app.Text = app.GetText(app.PeopleListFilter(app.Persons, Mode.oct), Mode.oct);
-                                        Console.WriteLine(app.Text);
+                                        Console.WriteLine(app.GetText(app.PeopleListFilter(app.Persons, Mode.oct), Mode.oct));
                                         break;
                                     case "11":
-                                        app.Text = app.GetText(app.PeopleListFilter(app.Persons, Mode.nov), Mode.nov);
-                                        Console.WriteLine(app.Text);
+                                        Console.WriteLine(app.GetText(app.PeopleListFilter(app.Persons, Mode.nov), Mode.nov));
                                         break;
                                     case "12":
-                                        app.Text = app.GetText(app.PeopleListFilter(app.Persons, Mode.dec), Mode.dec);
-                                        Console.WriteLine(app.Text);
+                                        Console.WriteLine(app.GetText(app.PeopleListFilter(app.Persons, Mode.dec), Mode.dec));
                                         break;
                                     case "q":
                                         break;
@@ -199,8 +181,7 @@ namespace happyBirthday
                             }
                             else if (choose == "a")
                             {
-                                app.Text = app.GetText(app.PeopleListFilter(app.Persons, Mode.all), Mode.all);
-                                Console.WriteLine(app.Text);
+                                Console.WriteLine(app.GetText(app.PeopleListFilter(app.Persons, Mode.all), Mode.all));
                             }
                             else if (choose == "q")
                             {
