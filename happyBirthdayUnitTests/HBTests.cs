@@ -739,9 +739,20 @@ namespace happyBirthdayUnitTests
 
 
         [Test]
-        public void FindPersonByName_NoDataValidInput_ThrowsEx()
+        public void FindPersonByName_NoDataValidInput_ReturnsEmpty()
         {
             List<Person> people = new();
+            string name = "Boris";
+            List<Person> exp = new();
+            List<Person> res = app.FindPersonByName(people, name);
+            Assert.AreEqual(exp, res);
+        }
+
+
+        [Test]
+        public void FindPersonByName_NullDataValidInput_ReturnsEmpty()
+        {
+            List<Person> people = null;
             string name = "Boris";
             List<Person> exp = new();
             List<Person> res = app.FindPersonByName(people, name);
