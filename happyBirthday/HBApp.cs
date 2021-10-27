@@ -239,16 +239,22 @@ namespace happyBirthday
                     switch (tm)
                     {
                         case Mode.today:
-                            text.Append($"\t{p.Name} ({p.GetAge(YearNow)})\n");
+                            _ = p.Birthyear != 0
+                                ? text.Append($"\t{p.Name} ({p.GetAge(YearNow)})\n")
+                                : text.Append($"\t{p.Name}\n");
                             break;
                         case Mode.thisMonth:
                             text.Append($"\t{p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)})\n");
                             break;
                         case Mode.all:
-                            text.Append($"\t{p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)}.{ToString(p.Birthyear)})\n");
+                            _ = p.Birthyear != 0
+                                ? text.Append($"\t{p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)}.{ToString(p.Birthyear)})\n")
+                                : text.Append($"\t{p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)})\n");
                             break;
                         case Mode.findResults:
-                            text.Append($"\t{p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)}.{ToString(p.Birthyear)})\n");
+                            _ = p.Birthyear != 0
+                                ? text.Append($"\t{p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)}.{ToString(p.Birthyear)})\n")
+                                : text.Append($"\t{p.Name} ({ToString(p.Birthday)}.{ToString(p.Birthmonth)})\n");
                             break;
                         case Mode.jan:
                         case Mode.feb:
@@ -273,7 +279,9 @@ namespace happyBirthday
                 {
                     case Mode.today:
                         text.Append(persons.Count == 1
+                            ? persons[0].Birthyear != 0
                             ? $"Сегодня {ToString(DayNow)}.{ToString(MonthNow)} отмечает день рождения\n\n\t{ persons[0].Name} ({persons[0].GetAge(YearNow)})\n"
+                            : $"Сегодня {ToString(DayNow)}.{ToString(MonthNow)} отмечает день рождения\n\n\t{ persons[0].Name} \n"
                             : $"Сегодня {ToString(DayNow)}.{ToString(MonthNow)} никто не отмечает день рождения");
                         break;
                     case Mode.thisMonth:
@@ -283,12 +291,16 @@ namespace happyBirthday
                         break;
                     case Mode.all:
                         text.Append(persons.Count == 1
+                            ? persons[0].Birthyear != 0
                             ? $"Все дни рождения\n\n\t{persons[0].Name} ({ToString(persons[0].Birthday)}.{ToString(persons[0].Birthmonth)}.{ToString(persons[0].Birthyear)})\n"
+                            : $"Все дни рождения\n\n\t{persons[0].Name} ({ToString(persons[0].Birthday)}.{ToString(persons[0].Birthmonth)})\n"
                             : $"Нет записей о днях рождения");
                         break;
                     case Mode.findResults:
                         text.Append(persons.Count == 1
+                            ? persons[0].Birthyear != 0
                             ? $"Результат поиска:\n\n\t{persons[0].Name} ({ToString(persons[0].Birthday)}.{ToString(persons[0].Birthmonth)}.{ToString(persons[0].Birthyear)})\n"
+                            : $"Результат поиска:\n\n\t{persons[0].Name} ({ToString(persons[0].Birthday)}.{ToString(persons[0].Birthmonth)})\n"
                             : $"Совпадений не найдено");
                         break;
                     case Mode.jan:
@@ -383,9 +395,10 @@ namespace happyBirthday
                 throw badInput;
             }
             Person p = new(name.ToUpper());
-            p.Birthday = int.Parse(birthday.Substring(0, 2));
-            p.Birthmonth = int.Parse(birthday.Substring(3, 2));
-            p.Birthyear = int.Parse(birthday.Substring(6, 4));
+            string[] bdate = birthday.Split(".");
+            p.Birthday = int.Parse(bdate[0]);
+            p.Birthmonth = int.Parse(bdate[1]);
+            p.Birthyear = bdate.Length == 3 ? int.Parse(bdate[2]) : 0;
             persons.Add(p);
             return persons;
         }
@@ -473,15 +486,28 @@ namespace happyBirthday
             }
             if (birthday != "birthdayParam")
             {
-                if (birthday.Length < 1 || birthday.Split(".").Length != 3)
+                if (birthday.Length < 1
+                    || birthday.Split(".").Length > 3
+                    || birthday.Split(".").Length < 2)
                 {
                     return false;
                 }
-                if (!ValidateDay(birthday.Split(".")[0])
-                    || !ValidateMonth(birthday.Split(".")[1])
-                    || !ValidateYear(birthday.Split(".")[2]))
+                if (birthday.Split(".").Length == 3)
                 {
-                    return false;
+                    if (!ValidateDay(birthday.Split(".")[0])
+                        || !ValidateMonth(birthday.Split(".")[1])
+                        || !ValidateYear(birthday.Split(".")[2]))
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    if (!ValidateDay(birthday.Split(".")[0])
+                        || !ValidateMonth(birthday.Split(".")[1]))
+                    {
+                        return false;
+                    }
                 }
             }
             return true;
