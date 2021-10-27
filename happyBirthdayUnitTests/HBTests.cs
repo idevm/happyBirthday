@@ -926,5 +926,44 @@ namespace happyBirthdayUnitTests
             bool res = app.ValidInput(n, bd);
             Assert.False(res);
         }
+
+
+        [TestCase("01", true)]
+        [TestCase("12", true)]
+        [TestCase("31", true)]
+        [TestCase("0", false)]
+        [TestCase("32", false)]
+        [TestCase("", false)]
+        public void ValidateDay_SomeDays_ReturnsBool(string d, bool exp)
+        {
+            bool res = app.ValidateDay(d);
+            Assert.AreEqual(exp, res);
+        }
+
+
+        [TestCase("01", true)]
+        [TestCase("12", true)]
+        [TestCase("09", true)]
+        [TestCase("0", false)]
+        [TestCase("13", false)]
+        [TestCase("", false)]
+        public void ValidateMonth_SomeDays_ReturnsBool(string m, bool exp)
+        {
+            bool res = app.ValidateMonth(m);
+            Assert.AreEqual(exp, res);
+        }
+
+
+        [TestCase("1990", true)]
+        [TestCase("1565", true)]
+        [TestCase("0", true)]
+        [TestCase("199", false)]
+        [TestCase("19900", false)]
+        [TestCase("", false)]
+        public void ValidateYear_SomeDays_ReturnsBool(string y, bool exp)
+        {
+            bool res = app.ValidateYear(y);
+            Assert.AreEqual(exp, res);
+        }
     }
 }
