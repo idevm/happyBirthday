@@ -541,7 +541,7 @@ namespace happyBirthday
         public bool ValidateYear(string y)
         {
             if (!int.TryParse(y, out int intY)
-            || y.Length != 4
+            || (y.Length != 4 && intY != 0)
             || intY > YearNow)
             {
                 return false;
