@@ -63,7 +63,7 @@ namespace happyBirthday
 
         public List<Person> GetPeopleList(List<string> lines)
         {
-            List<Person> persons = new();
+            List<Person> persons = new(lines?.Count ?? 0);
             if (lines == null || lines.Count == 0)
             {
                 return persons;
