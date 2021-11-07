@@ -510,7 +510,7 @@ namespace happyBirthdayUnitTests
         }
 
 
-        [TestCase("Ivan", "01.01.1990")]
+        [TestCase("Ivan", "01.01")]
         public void AddPerson_NullDataOneValidInput_ReturnsList(string name, string birthday)
         {
             List<Person> people = null;
@@ -519,7 +519,7 @@ namespace happyBirthdayUnitTests
             {
                 Birthday = 01,
                 Birthmonth = 01,
-                Birthyear = 1990,
+                Birthyear = 0,
                 number = 1
             };
             exp.Add(p);
@@ -651,6 +651,17 @@ namespace happyBirthdayUnitTests
             Assert.AreEqual(exp[0].Birthmonth, res[0].Birthmonth);
             Assert.AreEqual(exp[0].Birthyear, res[0].Birthyear);
             Assert.AreEqual(exp[0].Name, res[0].Name);
+        }
+
+
+        [Test]
+        public void RemovePerson_NoDataNoValidInput_ReturnsEmptyList()
+        {
+            List<Person> people = null;
+            Person pToRemove = null;
+            List<Person> exp = new();
+            List<Person> res = app.RemovePerson(people, pToRemove);
+            Assert.AreEqual(exp, res);
         }
 
 
@@ -898,15 +909,20 @@ namespace happyBirthdayUnitTests
         }
 
 
-        [Test]
-        public void ValidInput_OnlyValidBirthDay_ReturnsTrue()
+        [TestCase("01.01.1990")]
+        [TestCase("01.01")]
+        public void ValidInput_OnlyValidBirthDay_ReturnsTrue(string bd)
         {
-            bool res = app.ValidInput("01.01.1990");
+            bool res = app.ValidInput(bd);
             Assert.True(res);
         }
 
 
         [TestCase("Ivan", "0.01.1990")]
+        [TestCase("Ivan", "-1.01.1990")]
+        [TestCase("Ivan", "01.01.+990")]
+        [TestCase("Ivan", "01.-1.1990")]
+        [TestCase("Ivan", "01.01.(99)")]
         [TestCase("Ivan", "01.1.1990")]
         [TestCase("Ivan", "01.01.199")]
         [TestCase("Ivan", "01.")]
@@ -916,6 +932,7 @@ namespace happyBirthdayUnitTests
         [TestCase("Ivan", "01.01.")]
         [TestCase("Ivan", "")]
         [TestCase("Ivan", "01011990")]
+        [TestCase("Ivan", "01.01.1990.")]
         [TestCase("Ivan", "01,01,1990")]
         [TestCase("", "01.01.1990")]
         [TestCase("Ivan", "f")]
