@@ -374,10 +374,6 @@ namespace happyBirthday
             string name,
             string birthday)
         {
-            if (persons == null || persons.Count == 0)
-            {
-                persons = new();
-            }
             try
             {
                 if (!ValidInput(name: name))
@@ -399,6 +395,7 @@ namespace happyBirthday
             p.Birthday = int.Parse(bdate[0]);
             p.Birthmonth = int.Parse(bdate[1]);
             p.Birthyear = bdate.Length == 3 ? int.Parse(bdate[2]) : 0;
+            persons ??= new();
             persons.Add(p);
             return persons;
         }
@@ -408,15 +405,8 @@ namespace happyBirthday
             List<Person> persons,
             Person personToRemove)
         {
-            if (persons == null || persons.Count == 0)
-            {
-                return new();
-            }
-            if (personToRemove != null)
-            {
-                persons.Remove(personToRemove);
-            }
-            return persons;
+            persons?.Remove(personToRemove);
+            return persons ?? new();
         }
 
 
@@ -449,14 +439,7 @@ namespace happyBirthday
             {
                 return text.ToString();
             }
-            try
-            {
-                persons.Sort();
-            }
-            catch (ArgumentException)
-            {
-                throw;
-            }
+            persons.Sort();
             for (int i = 0; i < persons.Count; i++)
             {
                 persons[i].number = i + 1;
@@ -477,12 +460,9 @@ namespace happyBirthday
             {
                 return false;
             }
-            if (name != "nameParam")
+            if (name != "nameParam" && name.Length == 0)
             {
-                if (name.Length == 0)
-                {
-                    return false;
-                }
+                return false;
             }
             if (birthday != "birthdayParam")
             {
@@ -518,6 +498,8 @@ namespace happyBirthday
         {
             if (!int.TryParse(d, out int intD)
             || d.Length != 2
+            || d.Contains("-")
+            || d.Contains("+")
             || intD > 31)
             {
                 return false;
@@ -530,6 +512,8 @@ namespace happyBirthday
         {
             if (!int.TryParse(m, out int intM)
             || m.Length != 2
+            || m.Contains("-")
+            || m.Contains("+")
             || intM > 12)
             {
                 return false;
@@ -542,6 +526,8 @@ namespace happyBirthday
         {
             if (!int.TryParse(y, out int intY)
             || (y.Length != 4 && intY != 0)
+            || y.Contains("-")
+            || y.Contains("+")
             || intY > YearNow)
             {
                 return false;
