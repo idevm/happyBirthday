@@ -64,7 +64,7 @@ namespace happyBirthday
         public List<Person> GetPeopleList(List<string> lines)
         {
             List<Person> persons = new(lines?.Count ?? 0);
-            if (lines == null || lines.Count == 0)
+            if (lines == null)
             {
                 return persons;
             }
@@ -435,7 +435,7 @@ namespace happyBirthday
         public string UpdateText(List<Person> persons)
         {
             StringBuilder text = new("");
-            if (persons == null || persons.Count == 0)
+            if (persons == null)
             {
                 return text.ToString();
             }
@@ -496,43 +496,31 @@ namespace happyBirthday
 
         public bool ValidateDay(string d)
         {
-            if (!int.TryParse(d, out int intD)
-            || d.Length != 2
-            || d.Contains("-")
-            || d.Contains("+")
-            || intD > 31)
-            {
-                return false;
-            }
-            return true;
+            return int.TryParse(d, out int intD)
+            && d.Length == 2
+            && !d.Contains("-")
+            && !d.Contains("+")
+            && intD <= 31;
         }
 
 
         public bool ValidateMonth(string m)
         {
-            if (!int.TryParse(m, out int intM)
-            || m.Length != 2
-            || m.Contains("-")
-            || m.Contains("+")
-            || intM > 12)
-            {
-                return false;
-            }
-            return true;
+            return int.TryParse(m, out int intM)
+            && m.Length == 2
+            && !m.Contains("-")
+            && !m.Contains("+")
+            && intM <= 12;
         }
 
 
         public bool ValidateYear(string y)
         {
-            if (!int.TryParse(y, out int intY)
-            || (y.Length != 4 && intY != 0)
-            || y.Contains("-")
-            || y.Contains("+")
-            || intY > YearNow)
-            {
-                return false;
-            }
-            return true;
+            return int.TryParse(y, out int intY)
+            && (y.Length == 4 || intY == 0)
+            && !y.Contains("-")
+            && !y.Contains("+")
+            && intY <= YearNow;
         }
 
 
